@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="187.5" height="75" viewBox="0, 0, 375, 150">
+  <g id="Background">
+    <rect x="0" y="0" width="375" height="150" fill="#000000" fill-opacity="0"/>
+  </g>
+  <defs>
+    <linearGradient id="Gradient_1" gradientUnits="userSpaceOnUse" x1="48.72" y1="41.86" x2="81.5" y2="22.93">
+      <stop offset="0" stop-color="#A4681D"/>
+      <stop offset="0.31" stop-color="#E18F2F"/>
+      <stop offset="1" stop-color="#F0AD3E"/>
+    </linearGradient>
+    <linearGradient id="Gradient_2" gradientUnits="userSpaceOnUse" x1="66.22" y1="128.81" x2="115.2" y2="100.53">
+      <stop offset="0" stop-color="#F0AD3E"/>
+      <stop offset="0.69" stop-color="#E18F2F"/>
+      <stop offset="1" stop-color="#A4681D"/>
+    </linearGradient>
+    <linearGradient id="Gradient_3" gradientUnits="userSpaceOnUse" x1="28.21" y1="66.67" x2="116.93" y2="66.67">
+      <stop offset="0" stop-color="#006991"/>
+      <stop offset="0.25" stop-color="#008BBF"/>
+      <stop offset="0.62" stop-color="#008BBF"/>
+      <stop offset="1" stop-color="#00AEEF"/>
+    </linearGradient>
+    <linearGradient id="Gradient_4" gradientUnits="userSpaceOnUse" x1="48.72" y1="41.86" x2="81.5" y2="22.93">
+      <stop offset="0" stop-color="#A4681D"/>
+      <stop offset="0.31" stop-color="#E18F2F"/>
+      <stop offset="0.679" stop-color="#E99F37"/>
+      <stop offset="1" stop-color="#F0AD3E"/>
+    </linearGradient>
+    <linearGradient id="Gradient_5" gradientUnits="userSpaceOnUse" x1="66.22" y1="128.81" x2="115.2" y2="100.53">
+      <stop offset="0" stop-color="#F0AD3E"/>
+      <stop offset="0.69" stop-color="#E18F2F"/>
+      <stop offset="1" stop-color="#A4681D"/>
+    </linearGradient>
+    <linearGradient id="Gradient_6" gradientUnits="userSpaceOnUse" x1="28.21" y1="66.67" x2="116.93" y2="66.67">
+      <stop offset="0" stop-color="#006991"/>
+      <stop offset="0.25" stop-color="#008BBF"/>
+      <stop offset="0.62" stop-color="#008BBF"/>
+      <stop offset="1" stop-color="#00AEEF"/>
+    </linearGradient>
+  </defs>
+  <g id="Underlay-Autocad_3">
+    <g>
+      <text transform="matrix(1.02, 0, 0, 1, 159.671, 69.1)">
+        <tspan x="-20.452" y="29" font-family="Montserrat-Regular" font-size="82.721" kerning="-1.952" fill="#E18F2F">s</tspan>
+      </text>
+      <text transform="matrix(1.02, 0, 0, 1, 196.146, 69.1)">
+        <tspan x="-16.312" y="29" font-family="Montserrat-Regular" font-size="82.721" kerning="-2.953" fill="#E18F2F">t</tspan>
+      </text>
+      <text transform="matrix(1.02, 0, 0, 1, 239.635, 69.1)">
+        <tspan x="-27.318" y="29" font-family="Montserrat-Regular" font-size="82.721" kerning="-1.952" fill="#E18F2F">d</tspan>
+      </text>
+      <text transform="matrix(1.02, 0, 0, 1, 277.581, 69.1)">
+        <tspan x="-10.89" y="29" font-family="Montserrat-Regular" font-size="82.721" kerning="-1.886" fill="#008BBF">l</tspan>
+      </text>
+      <text transform="matrix(1.02, 0, 0, 1, 298.793, 69.1)">
+        <tspan x="-10.906" y="29" font-family="Montserrat-Regular" font-size="82.721" kerning="-1.853" fill="#008BBF">i</tspan>
+      </text>
+      <text transform="matrix(1.02, 0, 0, 1, 337.755, 69.1)">
+        <tspan x="-28.295" y="29" font-family="Montserrat-Regular" font-size="82.721" kerning="0.001" fill="#008BBF">b</tspan>
+      </text>
+    </g>
+    <path d="M73.08,8.35 L52.82,20 C50.239,21.51 48.013,23.556 46.29,26 C43.81,29.454 43.81,34.106 46.29,37.56 C48.021,39.975 50.247,41.993 52.82,43.48 L66.26,51.24 C65.618,50.771 65.022,50.242 64.48,49.66 C59.868,44.679 60.168,36.901 65.15,32.29 C72.59,27.34 76.11,16.72 73.08,8.35 z" fill="url(#Gradient_1)"/>
+    <path d="M111.88,97.92 L102.08,92.26 C104.923,93.859 106.653,96.894 106.58,100.155 C106.507,103.416 104.642,106.371 101.73,107.84 L80.76,120 C76.132,122.521 73.204,127.322 73.08,132.59 L73.08,140.74 L112.3,118.1 C115.776,115.892 117.846,112.029 117.76,107.912 C117.674,103.795 115.445,100.022 111.88,97.96 z" fill="url(#Gradient_2)"/>
+    <path d="M35.37,102.62 C30.884,99.842 28.171,94.925 28.212,89.649 C28.253,84.372 31.042,79.499 35.57,76.79 L21,85.17 C16.443,87.796 13.635,92.656 13.635,97.915 C13.635,103.174 16.443,108.034 21,110.66 L33.82,118.06 L73.08,140.7 L73.08,132.55 C72.94,127.297 70.014,122.515 65.4,120 L44.4,107.89 C44.104,107.739 43.817,107.572 43.54,107.39 z" fill="#00AEEF"/>
+    <path d="M90.74,65.32 L109.57,54.45 C114.122,51.82 116.925,46.962 116.925,41.705 C116.925,36.448 114.122,31.59 109.57,28.96 L104.45,25.96 C106.2,30.684 104.701,35.997 100.74,39.11 L73.08,55.11 L35.57,76.78 C31.042,79.489 28.253,84.362 28.212,89.639 C28.171,94.915 30.884,99.832 35.37,102.61 L43.57,107.34 C41.012,105.673 39.496,102.801 39.563,99.748 C39.631,96.695 41.271,93.893 43.9,92.34 z" fill="url(#Gradient_3)"/>
+    <path d="M52.82,43.43 C50.247,41.943 48.021,39.925 46.29,37.51 C43.81,34.056 43.81,29.404 46.29,25.95 C48.018,23.524 50.244,21.496 52.82,20 L37.38,29 C32.852,31.709 30.063,36.582 30.022,41.859 C29.981,47.135 32.694,52.052 37.18,54.83 L111.88,97.96 C115.445,100.022 117.674,103.795 117.76,107.912 C117.846,112.029 115.776,115.892 112.3,118.1 L125.12,110.7 C129.672,108.07 132.475,103.212 132.475,97.955 C132.475,92.698 129.672,87.84 125.12,85.21 z" fill="#F0AD3E"/>
+    <g>
+      <text transform="matrix(1.02, 0, 0, 1, 159.671, 69.1)">
+        <tspan x="-20.452" y="29" font-family="Montserrat-Regular" font-size="82.721" kerning="-1.952" fill="#E99F37">s</tspan>
+      </text>
+      <text transform="matrix(1.02, 0, 0, 1, 196.146, 69.1)">
+        <tspan x="-16.312" y="29" font-family="Montserrat-Regular" font-size="82.721" kerning="-2.953" fill="#E99F37">t</tspan>
+      </text>
+      <text transform="matrix(1.02, 0, 0, 1, 239.635, 69.1)">
+        <tspan x="-27.318" y="29" font-family="Montserrat-Regular" font-size="82.721" kerning="-1.952" fill="#E99F37">d</tspan>
+      </text>
+      <text transform="matrix(1.02, 0, 0, 1, 277.581, 69.1)">
+        <tspan x="-10.89" y="29" font-family="Montserrat-Regular" font-size="82.721" kerning="-1.886" fill="#009CD7">l</tspan>
+      </text>
+      <text transform="matrix(1.02, 0, 0, 1, 298.793, 69.1)">
+        <tspan x="-10.906" y="29" font-family="Montserrat-Regular" font-size="82.721" kerning="-1.853" fill="#009CD7">i</tspan>
+      </text>
+      <text transform="matrix(1.02, 0, 0, 1, 337.755, 69.1)">
+        <tspan x="-28.295" y="29" font-family="Montserrat-Regular" font-size="82.721" kerning="0.001" fill="#009CD7">b</tspan>
+      </text>
+    </g>
+    <path d="M73.08,8.35 L52.82,20 C50.239,21.51 48.013,23.556 46.29,26 C43.81,29.454 43.81,34.106 46.29,37.56 C48.021,39.975 50.247,41.993 52.82,43.48 L66.26,51.24 C65.618,50.771 65.022,50.242 64.48,49.66 C59.868,44.679 60.168,36.901 65.15,32.29 C72.59,27.34 76.11,16.72 73.08,8.35 z" fill="url(#Gradient_4)"/>
+    <path d="M111.88,97.92 L102.08,92.26 C104.923,93.859 106.653,96.894 106.58,100.155 C106.507,103.416 104.642,106.371 101.73,107.84 L80.76,120 C76.132,122.521 73.204,127.322 73.08,132.59 L73.08,140.74 L112.3,118.1 C115.776,115.892 117.846,112.029 117.76,107.912 C117.674,103.795 115.445,100.022 111.88,97.96 z" fill="url(#Gradient_5)"/>
+    <path d="M35.37,102.62 C30.884,99.842 28.171,94.925 28.212,89.649 C28.253,84.372 31.042,79.499 35.57,76.79 L21,85.17 C16.443,87.796 13.635,92.656 13.635,97.915 C13.635,103.174 16.443,108.034 21,110.66 L33.82,118.06 L73.08,140.7 L73.08,132.55 C72.94,127.297 70.014,122.515 65.4,120 L44.4,107.89 C44.104,107.739 43.817,107.572 43.54,107.39 z" fill="#00AEEF"/>
+    <path d="M90.74,65.32 L109.57,54.45 C114.122,51.82 116.925,46.962 116.925,41.705 C116.925,36.448 114.122,31.59 109.57,28.96 L104.45,25.96 C106.2,30.684 104.701,35.997 100.74,39.11 L73.08,55.11 L35.57,76.78 C31.042,79.489 28.253,84.362 28.212,89.639 C28.171,94.915 30.884,99.832 35.37,102.61 L43.57,107.34 C41.012,105.673 39.496,102.801 39.563,99.748 C39.631,96.695 41.271,93.893 43.9,92.34 z" fill="url(#Gradient_6)"/>
+    <path d="M52.82,43.43 C50.247,41.943 48.021,39.925 46.29,37.51 C43.81,34.056 43.81,29.404 46.29,25.95 C48.018,23.524 50.244,21.496 52.82,20 L37.38,29 C32.852,31.709 30.063,36.582 30.022,41.859 C29.981,47.135 32.694,52.052 37.18,54.83 L111.88,97.96 C115.445,100.022 117.674,103.795 117.76,107.912 C117.846,112.029 115.776,115.892 112.3,118.1 L125.12,110.7 C129.672,108.07 132.475,103.212 132.475,97.955 C132.475,92.698 129.672,87.84 125.12,85.21 z" fill="#F0AD3E"/>
+  </g>
+</svg>

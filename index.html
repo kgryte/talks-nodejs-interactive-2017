@@ -1,0 +1,2121 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+
+	<title>Talk | Node.js Interactive, 2017 | WebAssembly and the Future of the Web</title>
+
+	<meta name="description" content="WebAssembly has generated a significant amount of buzz since being first introduced and subsequently reaching cross-browser consensus. Several in the Node community have talked about WebAssembly allowing Node.js to fulfill the promise of the JVM, providing an efficient compile-to target with a single runtime. While WebAssembly is a significant development and will certainly affect how Node.js developers build their applications, some clarity is needed in helping developers better understand the implications WebAssembly will have on application development. To this end, this talk will inform developers as to what WebAssembly is and is not, help them understand why they should even care about WebAssembly in the first place, and enable them to make informed decisions when choosing whether to implement functionality in WebAssembly or as a Node.js add-on.">
+	<meta name="author" content="Athan Reines">
+
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+	<!-- Icons -->
+	<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+	<link rel="manifest" href="manifest.json">
+	<link rel="mask-icon" href="safari-pinned-tab.svg" color="#5bbad5">
+	<meta name="theme-color" content="#ffffff">
+
+	<!-- Facebook Open Graph -->
+	<meta property="og:type" content="website">
+	<meta property="og:site_name" content="stdlib">
+	<meta property="og:url" content="https://stdlib.io/">
+	<meta property="og:title" content="A standard library for JavaScript and Node.js.">
+	<meta property="og:description" content="stdlib is a standard library for JavaScript and Node.js, with an emphasis on numeric computing.">
+	<meta property="og:locale" content="en_US">
+	<meta property="og:image" content="">
+
+	<!-- Twitter -->
+	<meta name="twitter:card" content="A standard library for JavaScript and Node.js.">
+	<meta name="twitter:site" content="@stdlibjs">
+	<meta name="twitter:url" content="https://stdlib.io/">
+	<meta name="twitter:title" content="stdlib">
+	<meta name="twitter:description" content="stdlib is a standard library for JavaScript and Node.js, with an emphasis on numeric computing.">
+	<meta name="twitter:image" content="">
+
+	<!-- Stylesheets -->
+	<link rel="stylesheet" href="css/grid.css">
+	<link rel="stylesheet" href="css/font-awesome.css">
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/white.css">
+	<link rel="stylesheet" href="css/style.css">
+
+	<!-- Code syntax highlighting -->
+	<link rel="stylesheet" href="css/code/zenburn.css">
+
+	<!-- Printing and PDF exports -->
+	<script src="js/lib/reveal/pdf.js"></script>
+
+	<!--[if lt IE 9]>
+	<script src="js/lib/reveal/html5shiv.js"></script>
+	<![endif]-->
+</head>
+
+<body>
+
+	<header>
+		<a href="https://github.com/stdlib-js/stdlib"><img src="img/long_logo_white.svg" alt="stdlib"></a>
+	</header>
+
+	<div class="reveal">
+
+		<!-- Any section element inside of this container is displayed as a slide -->
+		<div class="slides">
+			<section id="splash" class="title-slide center" data-transition="fade-out" data-background-image="/img/conf_bkgd.png">
+				<h1>WebAssembly and the Future of the Web</h1>
+				<!-- <div>
+					<a href="https://github.com/stdlib-js/stdlib"><img src="img/long_logo_white.svg" alt="stdlib" class="undecorated" height="35%" width="35%"></a>
+				</div> -->
+				<div>
+					<small><a href="https://github.com/kgryte"><i class="fa fa-github"></i> Athan Reines</a> | <a href="https://twitter.com/kgryte"><i class="fa fa-twitter"></i> @kgryte</a> | <a href="https://twitter.com/stdlibjs"><i class="fa fa-twitter"></i> @stdlibjs</a></small>
+				</div>
+				<!-- <div>
+					<a href="https://github.com/stdlib-js/stdlib"><img src="img/hex_sticker_black.svg" alt="stdlib" class="undecorated"></a>
+				</div> -->
+				<aside class="notes">
+
+				</aside>
+			</section>
+
+			<section id="banner" class="center" data-transition="fade-out" data-background-image="/img/banner.png">
+
+				<aside class="notes">
+
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Overview</h2>
+
+				<div class="row">
+					<ul class="column column-3">
+						&nbsp;
+					</ul>
+					<ol class="column column-8">
+						<li class="fragment">History</li>
+						<li class="fragment">WebAssembly</li>
+						<li class="fragment">Toolchain</li>
+						<li class="fragment">Examples</li>
+						<li class="fragment">The Future</li>
+					</ol>
+				</div>
+
+				<aside class="notes">
+
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">History</h2>
+
+				<div class="row">
+					<ul class="column column-3">
+						&nbsp;
+					</ul>
+					<ul class="column column-8">
+						<li class="fragment">Applets</li>
+						<li class="fragment">ActiveX</li>
+						<li class="fragment">NaCl</li>
+						<li class="fragment">PNaCl</li>
+						<li class="fragment">asm.js</li>
+					</ul>
+				</div>
+
+				<aside class="notes">
+					<ul>
+						<li>
+							<p>
+								The first bit of prior art are Java applets. Java Applets are small applications written in Java or another language which compiles to Java bytecode.
+							</p>
+							<p>
+								When a user launches a Java applet from a webpage, the applet is executed within the Java Virtual Machine (JVM) in a process separate from the browser itself.
+							</p>
+							<p>
+								For much of their life on the web, applets were significantly faster than JavaScript and were especially useful for compute intensive applications.
+							</p>
+							<p>
+								However, as JavaScript engines have improved and gained support for hardware-accelerated graphics, the speed difference has diminished significantly.
+							</p>
+							<p>
+								Accordingly, Java applets have less of a role on the web and have now been deprecated.
+							</p>
+						</li>
+						<li>
+							As an alternative to Java Applets, Microsoft created ActiveX which allowed running unsandboxed native code. In theory, ActiveX was OS independent; however, in practice, ActiveX was strongly tied to Windows operating systems.
+						</li>
+						<li>
+							The next bit of prior art is Google Native Client (NaCl), which is a sandboxing technology capable of running native code at near native speed on select processors, such as Intel x86 and ARM.
+						</li>
+						<li>
+							NaCl was followed by Portable Native Client (PNaCl), which is an architecture-independent version of NaCl. Google has since deprecated PNaCl in favor of WebAssembly.
+						</li>
+						<li>
+							<p>
+								The last bit of prior art is asm.js, which started off as a research project at Mozilla.
+							</p>
+							<p>
+								The goal was to determine whether JavaScript could be reduced to a language subset, capable of ahead-of-time optimizations and other performance improvements similar to that of statically compiled languages.
+							</p>
+							<p>
+								The team working on asm.js was able to demonstrate a runtime performance just 1.5-2x of C. Meaning, using JavaScript alone, they were able to achieve near-native performance.
+							</p>
+							<p>
+								One of the big advantages of asm.js compared to prior efforts is that, because asm.js is still JavaScript, code compiled to asm.js is backward compatible with older browsers.
+							</p>
+						</li>
+					</ul>
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">WebAssembly</h2>
+
+				<aside class="notes">
+					Building of the collective efforts of the past 20 years, browser vendors came together to achieve consensus on binary format for the web.
+				</aside>
+			</section>
+
+			<section class="center">
+				<p>
+					A portable compilation target for the web
+				</p>
+
+				<aside class="notes">
+					<p>
+						In short, WebAssembly is a portable compilation target for the web.
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<p>
+					Allows running languages other than JavaScript within browser environments
+				</p>
+
+				<aside class="notes">
+					<p>
+						And it allows running languages other than JavaScript within browser environments.
+					</p>
+					<p>
+						More specifically, the current focus is the ability to run statically compiled languages, such as C, C++, and Rust, within browser environments.
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<aside class="notes">
+					As I mentioned, WebAssembly is a compilation target. So before going further, I want to make brief interlude regarding compilers...
+				</aside>
+			</section>
+
+			<section class="center">
+				<p>C/C++&nbsp;&nbsp;&nbsp;→&nbsp;&nbsp;&nbsp;x86/ARM</p>
+
+				<aside class="notes">
+					<p>
+						A "simple" compiler would take source files and directly compile them to machine code specific to a target CPU.
+					</p>
+					<p>
+						The issue here, however, is that, for every input language, you need to define how to translate that input to machine code.
+					</p>
+					<p>
+						Hence, if the number of languages is N and the number of CPU types is M, then the total number of translations is N by M (multiplicative).
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<p>C/C++&nbsp;&nbsp;&nbsp;→&nbsp;&nbsp;&nbsp;IR&nbsp;&nbsp;&nbsp;→&nbsp;&nbsp;&nbsp;x86/ARM</p>
+
+				<aside class="notes">
+					<p>
+						Many modern compilers, such as LLVM and GCC, are now split into two components: a frontend compiler, responsible for taking a higher level language like C or C++ and compiling to an optimized intermediate representation (IR), which is a low-level language similar to assembly, and a backend compiler, responsible for translating the intermediate representation to instruction sets (i.e., machine code).
+					</p>
+					<p>
+						By doing this, no longer is the translation problem N by M (or multiplicative), but additive, N plus M.
+					</p>
+					<p>
+						To support compiling an additional higher level language, I only need to write a single frontend compiler, responsible for compiling that higher level language to an intermediate representation.
+					</p>
+					<p>
+						Once the language is compiled to an intermediate representation, it can automatically be translated to machine code using an existing backend compiler.
+					</p>
+					<p>
+						This is in contrast to the "simple" compiler I mentioned previously where I would have needed to write M translations for every language I want to add.
+					</p>
+					<p>
+						In a similar vein, if I want to add an additional instruction set, I only need to figure out how to translate the intermediate representation to machine code specific to that processor.
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<p>C/C++&nbsp;&nbsp;&nbsp;→&nbsp;&nbsp;&nbsp;IR&nbsp;&nbsp;&nbsp;→&nbsp;&nbsp;&nbsp;wasm&nbsp;&nbsp;&nbsp;→&nbsp;&nbsp;&nbsp;x86/ARM</p>
+
+				<aside class="notes">
+					<p>
+						Now, where WebAssembly (abbreviated: wasm) fits in this pipeline is after the intermediate representation.
+					</p>
+					<p>
+						In the above pipeline, I begin with input source files. A frontend compiler compiles those source files to an intermediate representation.
+					</p>
+					<p>
+						A backend compiler takes the intermediate representation and compiles to WebAssembly.
+					</p>
+					<p>
+						The WebAssembly is subsequently passed to a JavaScript engine, either loaded over HTTP in a browser or read from the filesystem in Node.js.
+					</p>
+					<p>
+						The JavaScript engine then translates the WebAssembly to machine code specific to a host platform.
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Assembly</h2>
+
+				<aside class="notes">
+					<p>
+						So similar to how assembly is a low-level programming language which is specific to a particular computer architecture and has a strong correspondence between the language and an architecture's machine code instructions...
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<p>WebAssembly is assembly for the web</p>
+
+				<aside class="notes">
+					<p>
+						...WebAssembly is, as the name may imply, assembly for the web.
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Two Formats</h2>
+
+				<aside class="notes">
+					<p>
+						WebAssembly has two formats: a binary encoding and a text format.
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Text Format</h2>
+
+				<aside class="notes">
+					<p>
+						Let's begin with the text format.
+					</p>
+					<p>
+						WebAssembly will, and I say "will", as there is no formal specification for WebAssembly (more on the later), will define a standardized text format that encodes a WebAssembly module with all its contained definitions in a way that is equivalent to the binary format.
+					</p>
+					<p>
+						As an example...
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<pre><code class="hljs lisp" contenteditable>
+(module
+  (type $0 (func (param i32 i32) (result i32)))
+  (export "add" $add)
+  (func $add (type $0) (param $var$0 i32) (param $var$1 i32) (result i32)
+    (i32.add
+      (get_local $var$0)
+      (get_local $var$1)
+    )
+  )
+)
+				</code></pre>
+
+				<aside class="notes">
+					<p>
+						...here is WebAssembly module which exports a single function "add" which adds two 32-bit integers and returns a 32-bit integer result.
+					</p>
+					<p>
+						Similar to LISP, the text format, commonly referred to as WAST, uses s-expressions for representing the program "tree".
+					</p>
+					<p>
+						The type section contains function definitions that are used in the module.
+					</p>
+					<p>
+						The export section names the definitions which should be exported from the module.
+					</p>
+					<p>
+						The code section begins with a function declaration, the declaration of our function "add".
+					</p>
+					<p>
+						The function only accepts input arguments which are 32-bit integers, and it adds the integer arguments using the operator i32.add.
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Value Types</h2>
+
+				<div class="fragment row">
+					<ul class="column column-2">&nbsp;</ul>
+					<ul class="column column-5">
+						<li>i32</li>
+						<li>f32</li>
+						<li>i64</li>
+						<li>f64</li>
+					</ul>
+				</div>
+
+				<aside class="notes">
+					<p>
+						Currently, WebAssembly only supports 4 value types, which are all numeric types: 32-bit integers, 32-bit single-precision floating-point numbers, 64-bit integers, and 64-bit double-precision floating-point numbers.
+					</p>
+					<p>
+						Any other value type must be constructed by manipulating raw memory. In practice, this means copying data to the module heap and using pointers.
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Binary Encoding</h2>
+
+				<aside class="notes">
+					<p>
+						Moving along...now that we have a simple working example, let's turn our attention to the binary format.
+					</p>
+					<p>
+						The binary format is a dense representation of a WebAssembly module.
+					</p>
+					<p>
+						As an example...
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<pre><code class="hljs text" contenteditable>
+00 61 73 6d 01 00 00 00  04 74 79 70 65 87 80 80  |.asm.....type...|
+80 00 01 40 02 01 01 01  01 08 66 75 6e 63 74 69  |...@......functi|
+6f 6e 82 80 80 80 00 01  00 06 6d 65 6d 6f 72 79  |on........memory|
+85 80 80 80 00 80 02 80  02 01 06 65 78 70 6f 72  |...........expor|
+74 86 80 80 80 00 01 00  03 61 64 64 04 63 6f 64  |t........add.cod|
+65 8c 80 80 80 00 01 86  80 80 80 00 00 14 00 14  |e...............|
+01 40 04 6e 61 6d 65 86  80 80 80 00 01 03 61 64  |.@.name.......ad|
+64 00                                             |d.|
+				</code></pre>
+
+				<aside class="notes">
+					<p>
+						...here is same WebAssembly module we saw in text format represented in binary format.
+					</p>
+					<p>
+						If we convert the Hex to a string (right side), we can see that the module is comprised of 6 sections.
+					</p>
+					<ul>
+						<li>preamble</li>
+						<li>type</li>
+						<li>function</li>
+						<li>memory</li>
+						<li>export</li>
+						<li>code</li>
+						<li>name</li>
+					</ul>
+					<p>
+						Each section begins with the name of the section, followed by the total number of bytes comprising that section.
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Preamble</h2>
+
+				<div class="row">
+					<ul class="column column-12">
+						<li>
+							<p>Magic Number:</p>
+							<p><code>00 61 73 6d</code>&nbsp;&nbsp; → asm</p>
+						</li>
+						<li>
+							<p>Version:</p>
+							<p><code>01 00 00 00</code>&nbsp;&nbsp; → 1</p>
+						</li>
+					</ul>
+				</div>
+
+				<aside class="notes">
+					<p>
+						The first 8 bytes of every WebAssembly is the preamble.
+					</p>
+					<p>
+						The first 4 bytes of the preamble is a "magic number", which allows for a file loader to quickly determine if a file is WebAssembly or not.
+					</p>
+					<p>
+						The next 4 bytes of the preamble are the WebAssembly specification version. Here, the version number is 1.
+					</p>
+					<p>
+						The module preamble is followed by a sequence of optional sections, where each section begins with a section code followed by the section length (in bytes).
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Sections</h2>
+
+				<div class="row">
+					<ul class="column column-1">&nbsp;</ul>
+					<ol class="column column-10">
+						<li><strong>Type</strong>: function signature declarations</li>
+						<li><strong>Import</strong>: import declarations</li>
+						<li><strong>Function</strong>: function declarations</li>
+						<li><strong>Table</strong>: indirect function table and other tables</li>
+						<li><strong>Memory</strong>: memory attributes</li>
+						<li><strong>Global</strong>: global declarations</li>
+						<li><strong>Exports</strong>: exports</li>
+						<li><strong>Start</strong>: start function declaration</li>
+						<li><strong>Element</strong>: elements section</li>
+						<li><strong>Code</strong>: function bodies (code)</li>
+						<li><strong>Data</strong>: data segments</li>
+					</ol>
+				</div>
+
+				<aside class="notes">
+					<p>
+						There are 11 specification defined sections, all of which are optional...
+					</p>
+					<ol>
+						<li>
+							The <strong>type</strong> section declares all function signatures that will be used in the module. This may contain other type declarations in the future.
+						</li>
+						<li>
+							The <strong>import</strong> section declares all imports that will be used in the module; e.g., externally defined functions, including JavaScript functions.
+						</li>
+						<li>
+							The <strong>function</strong> section declares the signatures of all functions used in a module, whose definitions will appear in the <strong>code</strong> section.
+						</li>
+						<li>
+							The <strong>table</strong> section declares tables used in a module, where a table is similar to lineary memory, except, instead of bytes, the elements are opaque values of a particular element type. At the moment, the only supported element type is <code>"anyfunc"</code>, and the primary purpose of a table is to implement indirect function calls in C/C++ where the table contains indirectly-callable functions and an integer index is used as the pointer-to-function.
+						</li>
+						<li>
+							The <strong>memory</strong> section provides an internal definition of the linear memory used by a module, where linear memory can be considered as a sandboxed untyped array of bytes. Linear memories can either be declared within a module or created externally and imported.
+						</li>
+						<li>
+							The <strong>global</strong> section provides definitions of global variables.
+						</li>
+						<li>
+							The <strong>export</strong> section declares module definitions which should be made available to the external environment.
+						</li>
+						<li>
+							The <strong>start</strong> section specifies a function to invoke after a module instance is initialized and before exported functions are callable.
+						</li>
+						<li>
+							The <strong>elements</strong> section allows a module to initialize a table's elements.
+						</li>
+						<li>
+							The <strong>code</strong> section contains the function bodies for every function in a module.
+						</li>
+						<li>
+							The <strong>data</strong> section declares the initialized data that is loaded into linear memory.
+						</li>
+					</ol>
+					<p>
+						In addition to these sections, modules can define custom sections. One notable difference between these 11 sections and custom sections is that these sections must appear in order, whereas custom sections can appear in any order.
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Memory Access</h2>
+
+				<div class="row">
+					<ul class="column column-5">
+						<li>i32.load8_s (signed)</li>
+						<li>i32.load8_u (unsigned)</li>
+						<li>i32.load16_s</li>
+						<li>i32.load16_u</li>
+						<li>i32.load</li>
+						<li>i64.load8_s</li>
+						<li>i64.load8_u</li>
+						<li>i64.load16_s</li>
+						<li>i64.load16_u</li>
+						<li>i64.load32_s</li>
+						<li>i64.load32_u</li>
+					</ul>
+					<ul class="column column-3">
+						<li>i64.load</li>
+						<li>f32.load</li>
+						<li>f64.load</li>
+						<li>i32.store8</li>
+						<li>i32.store16</li>
+						<li>i32.store</li>
+						<li>i64.store8</li>
+						<li>i64.store16</li>
+						<li>i64.store32</li>
+						<li>i64.store</li>
+						<li>f32.store</li>
+					</ul>
+					<ul class="column column-3">
+						<li>f64.store</li>
+					</ul>
+				</div>
+
+				<aside class="notes">
+					Linear memory access is accomplished with explicit store and load operators.
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Control Constructs</h2>
+
+				<div class="row">
+					<ul class="column column-2">&nbsp;</ul>
+					<ul class="column column-5">
+						<li>nop</li>
+						<li>block</li>
+						<li>loop</li>
+						<li>if</li>
+						<li>else</li>
+						<li>br</li>
+						<li>br_if</li>
+						<li>br_table</li>
+						<li>return</li>
+						<li>end</li>
+					</ul>
+				</div>
+
+				<aside class="notes">
+					WebAssembly offers basic control flow constructs, such as ifs, loops, and blocks.
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Operators</h2>
+
+				<div class="row">
+					<ul class="column column-2">&nbsp;</ul>
+					<ul class="column column-5">
+						<li>i32.add</li>
+						<li>i32.sub</li>
+						<li>i32.mul</li>
+						<li>i32.div_s</li>
+						<li>i32.div_u</li>
+						<li>i32.rem_s</li>
+						<li>i32.rem_u</li>
+						<li>i32.and</li>
+						<li>...<a href="http://webassembly.org/docs/semantics/#32-bit-integer-operators">many more</a></li>
+					</ul>
+				</div>
+
+				<aside class="notes">
+					<p>
+						The current WebAssembly specification defines many operators and functions for data type conversion, truncation, reinterpretation, promotion, and demotion.
+					</p>
+					<p>
+						Here, I am listing operators for working with 32-bit integers. For the complete list of operators, see the specification.
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Advantages</h2>
+
+				<div class="fragment row">
+					<ul class="column column-2">&nbsp;</ul>
+					<ul class="column column-5">
+						<li>Compact</li>
+						<li>Parsing</li>
+						<li>Typed</li>
+						<li>Optimization</li>
+						<li>Deoptimization</li>
+						<li>Lower-level</li>
+						<li>GC</li>
+						<li>Performance</li>
+					</ul>
+				</div>
+
+				<aside class="notes">
+					<p>
+						WebAssembly has several purported advantages...
+					</p>
+					<ul>
+						<li>
+							First, the binary format is compact, which means fewer bytes must be sent over the wire and faster load times.
+						</li>
+						<li>
+							Next, because the binary format is structured, having a defined layout, module loaders need to perform only a single-pass in order to parse an encoded module into an AST in preparation for translating to machine code. The advantage of only requiring a single-pass is that modules are able to be instantiated faster compared to a module written in vanilla JavaScript.
+						</li>
+						<li>
+							Third, WebAssembly is strongly typed, which means more efficient serialization and, again, fewer bytes sent over the wire.
+						</li>
+						<li>
+							<p>
+								Next, because WebAssembly is strongly typed, frontend compilers are able to perform ahead-of-time optimizations. This stands in contrast to JavaScript for instance which first must be compiled and monitored to determine if particular functions are running "hot".
+							</p>
+							<p>
+								Once a function is "hot", the function gets sent to an optimizing compiler which makes optimistic assumptions about input value types and code paths, essentially creating an optimized version of the "hot" function.
+							</p>
+							<p>
+								If a function receives an unexpected input value type, the optimized function gets deoptimized and the cycle repeats indefinitely or until a function gets put in "deoptimization hell".
+							</p>
+							<p>
+								So instead of runtime optimization, with WebAssembly, we can do much of the optimization an optimizing compiler does before ever running in a JavaScript runtime.
+							</p>
+						</li>
+						<li>
+							Next, because WebAssembly is strongly typed, we are able to avoid deoptimizing cycles as the optimization/deoptimization loop is no longer needed: input and output value types are defined ahead-of-time and not something a runtime compiler must empirically discover.
+						</li>
+						<li>
+							Another advantage is that WebAssembly is lower-level, which means that WebAssembly is easier to translate to efficient and optimized machine instructions, which means faster execution.
+						</li>
+						<li>
+							<p>
+								Next, WebAssembly does not come with a garbage collector, which means that WebAssembly modules are responsible for manually managing memory. This is useful as this allows control over when memory is allocated and deallocated, as you might want to during "deadtime", i.e., when an application is running idle.
+							</p>
+							<p>
+								On the flip side, the lack of GC also means that languages which depend on a GC cannot be easily compiled to WebAssembly (e.g., Python, et al).
+							</p>
+						</li>
+						<li>
+							If we combine all the aforementioned advantages, WebAssembly promises, for certain applications, better performance compared to JavaScript.
+						</li>
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Toolchain</h2>
+
+				<aside class="notes">
+					So that finishes my high-level overview of WebAssembly. Next, I want to talk about the toolchain.
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Emscripten</h2>
+
+				<aside class="notes">
+					<p>
+						The main tool is Emscripten, which is an LLVM-to-JavaScript compiler.
+					</p>
+					<p>
+						It takes LLVM bitcode, which can be generated from C/C++ using llvm-gcc or clang, or from any other language which can be compiled to LLVM bitcode, and compiles that into JavaScript.
+					</p>
+					<p>
+						In practice, Emscripten serves as a drop-in replacement for a compiler like gcc, which, instead of binary, outputs JavaScript.
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Other Tools</h2>
+
+				<div class="row">
+					<ul class="column column-2">&nbsp;</ul>
+					<ul class="column column-9">
+						<li>Binaryen</li>
+						<li>WebAssembly Binary Toolkit (WABT)</li>
+					</ul>
+				</div>
+				<aside class="notes">
+					<ul>
+						<li>
+							<p>
+								Binaryen is a set of tools for use as a the backend of compilers targeting WebAssembly as an output format.
+							</p>
+							<p>
+								Binaryen is used for supporting the LLVM compiler generation of WebAssembly.
+							</p>
+						</li>
+						<li>
+							<p>
+								The WebAssembly Binary Toolkit (or WABT) is a set of tools for converting between the WebAssembly binary format and the WebAssembly text format.
+							</p>
+						</li>
+					</ul>
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform"><a title="Emscripten SDK" href="https://github.com/juj/emsdk">emsdk</a></h2>
+
+				<aside class="notes">
+					<p>
+						Most of the WebAssembly toolchain necessary for compiling WebAssembly can be installed via a standalone Emscripten SDK, which includes Emscripten, Binaryen, and CLANG.
+					</p>
+					<p>
+						One thing I should warn you: the installed SDK is huge. On my Mac, the entire set of tools consumes over 10GB in disk space.
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Examples</h2>
+
+				<aside class="notes">
+					All right, time for some examples...
+				</aside>
+			</section>
+
+			<section class="center">
+				<pre><code class="hljs c" contenteditable>
+// File: hypot.c
+#include &lt;math.h&gt;
+
+double c_hypot( const double x, const double y ) {
+    double tmp;
+    double a;
+    double b;
+    if ( isnan( x ) || isnan( y ) ) {
+        return NAN;
+    }
+    if ( isinf( x ) || isinf( y ) ) {
+        return INFINITY;
+    }
+    a = x;
+    b = y;
+    if ( a &lt; 0.0 ) {
+        a = -a;
+    }
+    if ( b &lt; 0.0 ) {
+        b = -b;
+    }
+    if ( a &lt; b ) {
+        tmp = b;
+        b = a;
+        a = tmp;
+    }
+    if ( a == 0.0 ) {
+        return 0.0;
+    }
+    b /= a;
+    return a * sqrt( 1.0 + (b*b) );
+}
+				</code></pre>
+
+				<aside class="notes">
+
+				</aside>
+			</section>
+
+			<section class="center">
+				<pre><code class="hljs bash" contenteditable>
+$ emcc -std=c99 -O3 -s WASM=1 -s SIDE_MODULE=1 -o hypot.wasm hypot.c
+				</code></pre>
+
+				<aside class="notes">
+					SIDE_MODULE instructs Emscripten to only output the compiled WebAssembly. By default, Emscripten, when compiling WebAssembly, generates glue code which makes working with the module heap easier.
+				</aside>
+			</section>
+
+			<section class="center">
+				<pre><code class="hljs text" contenteditable>
+0061 736d 0100 0000 018c 8080 8000 0260
+017c 017c 6002 7c7c 017c 0382 8080 8000
+0101 0484 8080 8000 0170 0000 0583 8080
+8000 0100 0106 8180 8080 0000 0794 8080
+8000 0206 6d65 6d6f 7279 0200 0763 5f68
+7970 6f74 0000 0af3 8180 8000 01ed 8180
+8000 0402 7e01 7c01 7f01 7c44 0000 0000
+0000 f87f 2106 0240 0240 2000 bd42 ffff
+ffff ffff ffff ff00 8322 0242 8080 8080
+8080 80f8 ff00 560d 0020 01bd 42ff ffff
+ffff ffff ffff 0083 2203 4280 8080 8080
+8080 f8ff 0056 0d00 4400 0000 0000 00f0
+7f21 0620 0242 8080 8080 8080 80f8 ff00
+510d 0020 0342 8080 8080 8080 80f8 ff00
+510d 0044 0000 0000 0000 0000 2106 2001
+9a20 0120 0144 0000 0000 0000 0000 631b
+2201 2000 9a20 0020 0044 0000 0000 0000
+0000 631b 2200 2000 2001 6322 051b 2204
+4400 0000 0000 0000 0062 0d01 0b20 060f
+0b20 0420 0020 0120 051b 2004 a322 0020
+00a2 4400 0000 0000 00f0 3fa0 9fa2 0b
+				</code></pre>
+
+				<aside class="notes">
+
+				</aside>
+			</section>
+
+			<section class="center">
+				<pre><code class="hljs text" contenteditable>
+(module
+  (type $FUNCSIG$dd (func (param f64) (result f64)))
+  (table 0 anyfunc)
+  (memory $0 1)
+  (export "memory" (memory $0))
+  (export "c_hypot" (func $c_hypot))
+  (func $c_hypot (param $0 f64) (param $1 f64) (result f64)
+    (local $2 i64)
+    (local $3 i64)
+    (local $4 f64)
+    (local $5 i32)
+    (local $6 f64)
+    (set_local $6
+      (f64.const nan:0x8000000000000)
+    )
+    (block $label$0
+      (block $label$1
+        (br_if $label$1
+          (i64.gt_u
+            (tee_local $2
+              (i64.and
+                (i64.reinterpret/f64
+                  (get_local $0)
+                )
+                (i64.const 9223372036854775807)
+              )
+            )
+            (i64.const 9218868437227405312)
+          )
+        )
+        (br_if $label$1
+          (i64.gt_u
+            (tee_local $3
+              (i64.and
+                (i64.reinterpret/f64
+                  (get_local $1)
+                )
+                (i64.const 9223372036854775807)
+              )
+            )
+            (i64.const 9218868437227405312)
+          )
+        )
+        (set_local $6
+          (f64.const infinity)
+        )
+        (br_if $label$1
+          (i64.eq
+            (get_local $2)
+            (i64.const 9218868437227405312)
+          )
+        )
+        (br_if $label$1
+          (i64.eq
+            (get_local $3)
+            (i64.const 9218868437227405312)
+          )
+        )
+        (set_local $6
+          (f64.const 0)
+        )
+        (br_if $label$0
+          (f64.ne
+            (tee_local $4
+              (select
+                (tee_local $1
+                  (select
+                    (f64.neg
+                      (get_local $1)
+                    )
+                    (get_local $1)
+                    (f64.lt
+                      (get_local $1)
+                      (f64.const 0)
+                    )
+                  )
+                )
+                (tee_local $0
+                  (select
+                    (f64.neg
+                      (get_local $0)
+                    )
+                    (get_local $0)
+                    (f64.lt
+                      (get_local $0)
+                      (f64.const 0)
+                    )
+                  )
+                )
+                (tee_local $5
+                  (f64.lt
+                    (get_local $0)
+                    (get_local $1)
+                  )
+                )
+              )
+            )
+            (f64.const 0)
+          )
+        )
+      )
+      (return
+        (get_local $6)
+      )
+    )
+    (f64.mul
+      (get_local $4)
+      (f64.sqrt
+        (f64.add
+          (f64.mul
+            (tee_local $0
+              (f64.div
+                (select
+                  (get_local $0)
+                  (get_local $1)
+                  (get_local $5)
+                )
+                (get_local $4)
+              )
+            )
+            (get_local $0)
+          )
+          (f64.const 1)
+        )
+      )
+    )
+  )
+)
+				</code></pre>
+
+				<aside class="notes">
+
+				</aside>
+			</section>
+
+			<section class="center">
+				<pre><code class="hljs javascript" contenteditable>
+var join = require( 'path' ).join;
+var readFileSync = require( 'fs' ).readFileSync;
+
+// Load the file:
+var buf = readFileSync( join( __dirname, 'hypot.wasm' ) );
+
+// Create a WebAssembly module:
+var m = new WebAssembly.Module( buf );
+
+// Define the module environment:
+var memory = new WebAssembly.Memory({ 'initial': 256 });
+var table = new WebAssembly.Table({ 'initial': 0, 'element': 'anyfunc' });
+var imports = { 'env': { 'memory': memory, 'memoryBase': 0, 'table': table, 'tableBase': 0 } };
+
+// Create an executable instance:
+var instance = new WebAssembly.Instance( m, imports );
+
+// Alias the exported function:
+var hypot = instance.exports.c_hypot;
+				</code></pre>
+
+				<aside class="notes">
+					Load similar to require (synchronously). Load buffer. Initialize the module environment. Create a block of linear memory which a module will use for its heap. Create a table for indirect C/C++ function calls. Bundle as imports. Create a new instance. Use as normal.
+				</aside>
+			</section>
+
+			<section class="center">
+				<pre><code class="hljs c" contenteditable>
+// File: dasum.c
+#include &lt;math.h&gt;
+
+double c_dasum( const int N, const double *X, const int stride ) {
+    double sum;
+    int m;
+    int n;
+    int i;
+
+    sum = 0.0;
+    if ( N &lt;= 0 || stride &lt;= 0 ) {
+        return sum;
+    }
+    // If the stride is equal to `1`, use unrolled loops...
+    if ( stride == 1 ) {
+        m = N % 6;
+
+        // If we have a remainder, run a clean-up loop...
+        if ( m > 0 ) {
+            for ( i = 0; i &lt; m; i++ ) {
+                sum += fabs( X[i] );
+            }
+        }
+        if ( N &lt; 6 ) {
+            return sum;
+        }
+        for ( i = m; i &lt; N; i += 6 ) {
+            sum += fabs( X[i] ) + fabs( X[i+1] ) + fabs( X[i+2] ) + fabs( X[i+3] ) + fabs( X[i+4] ) + fabs( X[i+5] );
+        }
+        return sum;
+    }
+    n = N * stride;
+    for ( i = 0; i &lt; n; i += stride ) {
+        sum += fabs( X[i] );
+    }
+    return sum;
+}
+				</code></pre>
+
+				<aside class="notes">
+					As another example, a BLAS function.
+				</aside>
+			</section>
+
+			<section class="center">
+				<pre><code class="hljs bash" contenteditable>
+$ emcc \
+  -std=c99 \
+  -O3 \
+  -s WASM=1 \
+  -s MODULARIZE=1 \
+  -s BINARYEN_ASYNC_COMPILATION=0 \
+  -s "BINARYEN_METHOD='native-wasm'" \
+  -o dasum.wasm \
+  dasum.c
+				</code></pre>
+
+				<aside class="notes">
+					This time, we are not set the SIDE_MODULE flag, which will result in a significantly larger binary file. The MODULARIZE flag instructs Emscripten to wrap the glue code interface as a CommonJS module that can be required.
+				</aside>
+			</section>
+
+			<section class="center">
+				<pre><code class="hljs text" contenteditable>
+0061 736d 0100 0000 01aa 8080 8000 0860
+0001 7f60 0000 6003 7f7f 7f01 7f60 017f
+0060 017f 017f 6002 7f7f 0060 027f 7f01
+7f60 037f 7f7f 017c 02fe 8180 8000 0d03
+656e 760e 4459 4e41 4d49 4354 4f50 5f50
+5452 037f 0003 656e 7608 5354 4143 4b54
+4f50 037f 0003 656e 7609 5354 4143 4b5f
+4d41 5803 7f00 0365 6e76 0d65 6e6c 6172
+6765 4d65 6d6f 7279 0000 0365 6e76 0e67
+6574 546f 7461 6c4d 656d 6f72 7900 0003
+656e 7617 6162 6f72 744f 6e43 616e 6e6f
+7447 726f 774d 656d 6f72 7900 0003 656e
+7606 5f61 626f 7274 0001 0365 6e76 165f
+656d 7363 7269 7074 656e 5f6d 656d 6370
+795f 6269 6700 0203 656e 760b 5f5f 5f73
+6574 4572 724e 6f00 0303 656e 7606 6d65
+6d6f 7279 0201 8002 8002 0365 6e76 0574
+6162 6c65 0170 0100 0003 656e 760a 6d65
+6d6f 7279 4261 7365 037f 0003 656e 7609
+7461 626c 6542 6173 6503 7f00 0392 8080
+8000 1104 0003 0505 0300 0607 0004 0301
+0400 0202 069f 8080 8000 067f 0123 000b
+7f01 2301 0b7f 0123 020b 7f01 4100 0b7f
+0141 000b 7f01 4100 0b07 bd81 8080 000f
+085f 635f 6461 7375 6d00 0e05 5f66 7265
+6500 110d 5f70 7468 7265 6164 5f73 656c
+6600 1407 5f6d 656d 7365 7400 1507 5f6d
+616c 6c6f 6300 1007 5f6d 656d 6370 7900
+1605 5f73 6272 6b00 130b 7275 6e50 6f73
+7453 6574 7300 120a 7374 6163 6b41 6c6c
+6f63 0006 0973 7461 636b 5361 7665 0007
+0c73 7461 636b 5265 7374 6f72 6500 0813
+6573 7461 626c 6973 6853 7461 636b 5370
+6163 6500 090b 7365 7454 656d 7052 6574
+3000 0b0b 6765 7454 656d 7052 6574 3000
+0c08 7365 7454 6872 6577 000a 0981 8080
+8000 000a f8d4 8080 0011 9e80 8080 0001
+017f 027f 2306 2101 2306 2000 6a24 0623
+0641 0f6a 4170 7124 0620 010b 0b84 8080
+8000 0023 060b 8680 8080 0000 2000 2406
+0b8d 8080 8000 0002 4020 0024 0620 0124
+070b 0b90 8080 8000 0023 0845 0440 2000
+2408 2001 2409 0b0b 8680 8080 0000 2000
+240a 0b84 8080 8000 0023 0a0b 8f80 8080
+0000 2001 047f 2000 2001 6f05 4100 0b0b
+c482 8080 0002 017f 017c 027c 2000 4101
+4820 0241 0148 7204 4044 0000 0000 0000
+0000 0f0b 2002 4101 4704 4020 0220 006c
+2203 4100 4a04 4041 0021 0044 0000 0000
+0000 0000 2104 0544 0000 0000 0000 0000
+0f0b 0340 2004 2001 2000 4103 746a 2b03
+0099 a021 0420 0020 026a 2200 2003 480d
+000b 2004 0f0b 2000 4106 100d 2203 4100
+4a04 4041 0021 0244 0000 0000 0000 0000
+2104 0340 2004 2001 2002 4103 746a 2b03
+0099 a021 0420 0241 016a 2202 2003 470d
+000b 0544 0000 0000 0000 0000 2104 0b20
+0041 054a 2003 2000 4871 0440 2003 2102
+0520 040f 0b03 4020 0420 0120 0241 0374
+6a2b 0300 9920 0120 0241 016a 4103 746a
+2b03 0099 a020 0120 0241 026a 4103 746a
+2b03 0099 a020 0120 0241 036a 4103 746a
+2b03 0099 a020 0120 0241 046a 4103 746a
+2b03 0099 a020 0120 0241 056a 4103 746a
+2b03 0099 a0a0 2104 2002 4106 6a22 0220
+0048 0d00 0b20 040b 0b94 8080 8000 0041
+8008 2802 0004 7f10 1428 0240 0541 ac08
+0b0b f3b7 8080 0001 157f 027f 2306 210e
+2306 4110 6a24 0620 0e21 1202 4020 0041
+f501 4904 4020 0041 0b6a 4178 7121 0341
+b008 2802 0022 0820 0041 0b49 047f 4110
+2203 0520 030b 4103 7622 0276 2200 4103
+7104 4020 0041 0171 4101 7320 026a 2205
+4103 7441 d808 6a22 0241 086a 2203 2802
+0022 0741 086a 2201 2802 0021 0420 0220
+0446 0440 41b0 0820 0841 0120 0574 417f
+7371 3602 0005 2004 41c0 0828 0200 4904
+4010 030b 2004 410c 6a22 0028 0200 2007
+4604 4020 0020 0236 0200 2003 2004 3602
+0005 1003 0b0b 2007 2005 4103 7422 0041
+0372 3602 0420 0720 006a 4104 6a22 0020
+0028 0200 4101 7236 0200 200e 2406 2001
+0f0b 2003 41b8 0828 0200 2210 4b04 4020
+0004 4020 0020 0274 4102 2002 7422 0041
+0020 006b 7271 2200 4100 2000 6b71 417f
+6a22 0041 0c76 4110 7121 0520 0020 0576
+2202 4105 7641 0871 2200 2005 7220 0220
+0076 2202 4102 7641 0471 2200 7220 0220
+0076 2202 4101 7641 0271 2200 7220 0220
+0076 2202 4101 7641 0171 2200 7220 0220
+0076 6a22 0b41 0374 41d8 086a 2204 4108
+6a22 0228 0200 2209 4108 6a22 0528 0200
+210c 2004 200c 4604 4041 b008 2008 4101
+200b 7441 7f73 7122 0736 0200 0520 0c41
+c008 2802 0049 0440 1003 0b20 0c41 0c6a
+2200 2802 0020 0946 0440 2000 2004 3602
+0020 0220 0c36 0200 2008 2107 0510 030b
+0b20 0920 0341 0372 3602 0420 0920 036a
+2204 200b 4103 7420 036b 220b 4101 7236
+0204 2004 200b 6a20 0b36 0200 2010 0440
+41c4 0828 0200 2109 2010 4103 7622 0041
+0374 41d8 086a 2102 2007 4101 2000 7422
+0071 0440 2002 4108 6a22 0328 0200 2200
+41c0 0828 0200 4904 4010 0305 2003 2106
+2000 2101 0b05 41b0 0820 0720 0072 3602
+0020 0241 086a 2106 2002 2101 0b20 0620
+0936 0200 2001 2009 3602 0c20 0920 0136
+0208 2009 2002 3602 0c0b 41b8 0820 0b36
+0200 41c4 0820 0436 0200 200e 2406 2005
+0f0b 41b4 0828 0200 2206 0440 2006 4100
+2006 6b71 417f 6a22 0041 0c76 4110 7121
+0220 0020 0276 2201 4105 7641 0871 2200
+2002 7220 0120 0076 2201 4102 7641 0471
+2200 7220 0120 0076 2201 4101 7641 0271
+2200 7220 0120 0076 2201 4101 7641 0171
+2200 7220 0120 0076 6a41 0274 41e0 0a6a
+2802 0022 0228 0204 4178 7120 036b 2109
+2002 2101 0340 0240 2001 2802 1022 0045
+0440 2001 2802 1422 0045 0d01 0b20 0028
+0204 4178 7120 036b 2201 2009 4922 0704
+4020 0121 090b 2000 2101 2007 0440 2000
+2102 0b0c 010b 0b20 0241 c008 2802 0022
+0c49 0440 1003 0b20 0220 0220 036a 220d
+4f04 4010 030b 2002 2802 1821 0f02 4020
+0228 020c 2200 2002 4604 4020 0241 146a
+2201 2802 0022 0045 0440 2002 4110 6a22
+0128 0200 2200 4504 4041 0021 040c 030b
+0b03 4020 0041 146a 220b 2802 0022 0704
+4020 0721 0020 0b21 010c 010b 2000 4110
+6a22 0b28 0200 2207 0440 2007 2100 200b
+2101 0c01 0b0b 2001 200c 4904 4010 0305
+2001 4100 3602 0020 0021 040b 0520 0228
+0208 220b 200c 4904 4010 030b 200b 410c
+6a22 0728 0200 2002 4704 4010 030b 2000
+4108 6a22 0128 0200 2002 4604 4020 0720
+0036 0200 2001 200b 3602 0020 0021 0405
+1003 0b0b 0b02 4020 0f04 4020 0220 0228
+021c 2201 4102 7441 e00a 6a22 0028 0200
+4604 4020 0020 0436 0200 2004 4504 4041
+b408 2006 4101 2001 7441 7f73 7136 0200
+0c03 0b05 200f 41c0 0828 0200 4904 4010
+030b 200f 4110 6a22 0028 0200 2002 4604
+4020 0020 0436 0200 0520 0f20 0436 0214
+0b20 0445 0d02 0b20 0441 c008 2802 0022
+0049 0440 1003 0b20 0420 0f36 0218 2002
+2802 1022 0104 4020 0120 0049 0440 1003
+0520 0420 0136 0210 2001 2004 3602 180b
+0b20 0228 0214 2200 0440 2000 41c0 0828
+0200 4904 4010 0305 2004 2000 3602 1420
+0020 0436 0218 0b0b 0b0b 2009 4110 4904
+4020 0220 0920 036a 2200 4103 7236 0204
+2002 2000 6a41 046a 2200 2000 2802 0041
+0172 3602 0005 2002 2003 4103 7236 0204
+200d 2009 4101 7236 0204 200d 2009 6a20
+0936 0200 2010 0440 41c4 0828 0200 2107
+2010 4103 7622 0041 0374 41d8 086a 2103
+2008 4101 2000 7422 0071 0440 2003 4108
+6a22 0128 0200 2200 41c0 0828 0200 4904
+4010 0305 2001 210a 2000 2105 0b05 41b0
+0820 0820 0072 3602 0020 0341 086a 210a
+2003 2105 0b20 0a20 0736 0200 2005 2007
+3602 0c20 0720 0536 0208 2007 2003 3602
+0c0b 41b8 0820 0936 0200 41c4 0820 0d36
+0200 0b20 0e24 0620 0241 086a 0f05 2003
+2100 0b05 2003 2100 0b05 2000 41bf 7f4b
+0440 417f 2100 0520 0041 0b6a 2200 4178
+7121 0741 b408 2802 0022 0504 4020 0041
+0876 2200 047f 2007 41ff ffff 074b 047f
+411f 0520 0741 0e20 0020 0041 80fe 3f6a
+4110 7641 0871 2203 7422 0141 80e0 1f6a
+4110 7641 0471 2200 2003 7220 0120 0074
+2201 4180 800f 6a41 1076 4102 7122 0072
+6b20 0120 0074 410f 766a 2200 4107 6a76
+4101 7120 0041 0174 720b 0541 000b 2111
+4100 2007 6b21 0302 4002 4002 4020 1141
+0274 41e0 0a6a 2802 0022 0104 4041 1920
+1141 0176 6b21 0041 0021 0420 0720 1141
+1f46 047f 4100 0520 000b 7421 0a41 0021
+0003 4020 0128 0204 4178 7120 076b 2206
+2003 4904 4020 0604 4020 0621 0320 0121
+0005 4100 2103 2001 2100 0c05 0b0b 2001
+2802 1422 1345 2013 2001 4110 6a20 0a41
+1f76 4102 746a 2802 0022 0646 7204 7f20
+0405 2013 0b21 0120 0a20 0645 2204 4101
+7374 210a 2004 0440 2001 2104 2000 2101
+0c03 0520 0121 0420 0621 010c 010b 000b
+0005 4100 2104 4100 2101 0b0b 2004 4520
+0145 7104 7f20 0541 0220 1174 2200 4100
+2000 6b72 7122 0045 0440 2007 2100 0c07
+0b20 0041 0020 006b 7141 7f6a 2200 410c
+7641 1071 210a 2000 200a 7622 0441 0576
+4108 7122 0020 0a72 2004 2000 7622 0441
+0276 4104 7122 0072 2004 2000 7622 0441
+0176 4102 7122 0072 2004 2000 7622 0441
+0176 4101 7122 0072 2004 2000 766a 4102
+7441 e00a 6a28 0200 0520 040b 2200 0d00
+2001 2104 0c01 0b03 4020 0028 0204 4178
+7120 076b 2204 2003 4922 0a04 4020 0421
+030b 200a 0440 2000 2101 0b20 0028 0210
+2204 0440 2004 2100 0c01 0b20 0028 0214
+2200 0d00 2001 2104 0b0b 2004 0440 2003
+41b8 0828 0200 2007 6b49 0440 2004 41c0
+0828 0200 220c 4904 4010 030b 2004 2004
+2007 6a22 064f 0440 1003 0b20 0428 0218
+210a 0240 2004 2802 0c22 0020 0446 0440
+2004 4114 6a22 0128 0200 2200 4504 4020
+0441 106a 2201 2802 0022 0045 0440 4100
+210d 0c03 0b0b 0340 2000 4114 6a22 0928
+0200 220b 0440 200b 2100 2009 2101 0c01
+0b20 0041 106a 2209 2802 0022 0b04 4020
+0b21 0020 0921 010c 010b 0b20 0120 0c49
+0440 1003 0520 0141 0036 0200 2000 210d
+0b05 2004 2802 0822 0920 0c49 0440 1003
+0b20 0941 0c6a 220b 2802 0020 0447 0440
+1003 0b20 0041 086a 2201 2802 0020 0446
+0440 200b 2000 3602 0020 0120 0936 0200
+2000 210d 0510 030b 0b0b 0240 200a 0440
+2004 2004 2802 1c22 0141 0274 41e0 0a6a
+2200 2802 0046 0440 2000 200d 3602 0020
+0d45 0440 41b4 0820 0541 0120 0174 417f
+7371 2202 3602 000c 030b 0520 0a41 c008
+2802 0049 0440 1003 0b20 0a41 106a 2200
+2802 0020 0446 0440 2000 200d 3602 0005
+200a 200d 3602 140b 200d 4504 4020 0521
+020c 030b 0b20 0d41 c008 2802 0022 0049
+0440 1003 0b20 0d20 0a36 0218 2004 2802
+1022 0104 4020 0120 0049 0440 1003 0520
+0d20 0136 0210 2001 200d 3602 180b 0b20
+0428 0214 2200 0440 2000 41c0 0828 0200
+4904 4010 0305 200d 2000 3602 1420 0020
+0d36 0218 2005 2102 0b05 2005 2102 0b05
+2005 2102 0b0b 0240 2003 4110 4904 4020
+0420 0320 076a 2200 4103 7236 0204 2004
+2000 6a41 046a 2200 2000 2802 0041 0172
+3602 0005 2004 2007 4103 7236 0204 2006
+2003 4101 7236 0204 2006 2003 6a20 0336
+0200 2003 4103 7621 0020 0341 8002 4904
+4020 0041 0374 41d8 086a 2103 41b0 0828
+0200 2201 4101 2000 7422 0071 0440 2003
+4108 6a22 0128 0200 2200 41c0 0828 0200
+4904 4010 0305 2001 2110 2000 2108 0b05
+41b0 0820 0120 0072 3602 0020 0341 086a
+2110 2003 2108 0b20 1020 0636 0200 2008
+2006 3602 0c20 0620 0836 0208 2006 2003
+3602 0c0c 020b 2003 4108 7622 0004 7f20
+0341 ffff ff07 4b04 7f41 1f05 2003 410e
+2000 2000 4180 fe3f 6a41 1076 4108 7122
+0574 2201 4180 e01f 6a41 1076 4104 7122
+0020 0572 2001 2000 7422 0141 8080 0f6a
+4110 7641 0271 2200 726b 2001 2000 7441
+0f76 6a22 0041 076a 7641 0171 2000 4101
+7472 0b05 4100 0b22 0541 0274 41e0 0a6a
+2101 2006 2005 3602 1c20 0641 106a 2200
+4100 3602 0420 0041 0036 0200 2002 4101
+2005 7422 0071 4504 4041 b408 2002 2000
+7236 0200 2001 2006 3602 0020 0620 0136
+0218 2006 2006 3602 0c20 0620 0636 0208
+0c02 0b20 0128 0200 2100 4119 2005 4101
+766b 2101 2003 2005 411f 4604 7f41 0005
+2001 0b74 2105 0240 0240 0240 0340 2000
+2802 0441 7871 2003 460d 0220 0541 0174
+2102 2000 4110 6a20 0541 1f76 4102 746a
+2205 2802 0022 0145 0d01 2002 2105 2001
+2100 0c00 0b00 0b20 0541 c008 2802 0049
+0440 1003 0520 0520 0636 0200 2006 2000
+3602 1820 0620 0636 020c 2006 2006 3602
+080c 040b 0c01 0b20 0041 086a 2203 2802
+0022 0241 c008 2802 0022 014f 2000 2001
+4f71 0440 2002 2006 3602 0c20 0320 0636
+0200 2006 2002 3602 0820 0620 0036 020c
+2006 4100 3602 1805 1003 0b0b 0b0b 200e
+2406 2004 4108 6a0f 0520 0721 000b 0520
+0721 000b 0520 0721 000b 0b0b 0b41 b808
+2802 0022 0120 004f 0440 41c4 0828 0200
+2102 2001 2000 6b22 0341 0f4b 0440 41c4
+0820 0220 006a 2201 3602 0041 b808 2003
+3602 0020 0120 0341 0172 3602 0420 0120
+036a 2003 3602 0020 0220 0041 0372 3602
+0405 41b8 0841 0036 0200 41c4 0841 0036
+0200 2002 2001 4103 7236 0204 2002 2001
+6a41 046a 2200 2000 2802 0041 0172 3602
+000b 200e 2406 2002 4108 6a0f 0b41 bc08
+2802 0022 0a20 004b 0440 41bc 0820 0a20
+006b 2203 3602 0041 c808 41c8 0828 0200
+2202 2000 6a22 0136 0200 2001 2003 4101
+7236 0204 2002 2000 4103 7236 0204 200e
+2406 2002 4108 6a0f 0b41 880c 2802 0004
+7f41 900c 2802 0005 4190 0c41 8020 3602
+0041 8c0c 4180 2036 0200 4194 0c41 7f36
+0200 4198 0c41 7f36 0200 419c 0c41 0036
+0200 41ec 0b41 0036 0200 2012 2012 4170
+7141 d8aa d5aa 0573 2201 3602 0041 880c
+2001 3602 0041 8020 0b22 0120 0041 2f6a
+220d 6a22 0841 0020 016b 2204 7122 0620
+004d 0440 200e 2406 4100 0f0b 41e8 0b28
+0200 2202 0440 41e0 0b28 0200 2203 2006
+6a22 0120 034d 2001 2002 4b72 0440 200e
+2406 4100 0f0b 0b20 0041 306a 2107 0240
+0240 41ec 0b28 0200 4104 7145 0440 0240
+0240 0240 41c8 0828 0200 2203 450d 0041
+f00b 2102 0340 0240 2002 2802 0022 0120
+034d 0440 2001 2002 4104 6a22 0528 0200
+6a20 034b 0d01 0b20 0228 0208 2201 450d
+0220 0121 020c 010b 0b20 0820 0a6b 2004
+7122 0341 ffff ffff 0749 0440 2003 1013
+2201 2002 2802 0020 0528 0200 6a46 0440
+2001 417f 470d 0605 2001 2102 2003 2101
+0c03 0b0b 0c02 0b41 0010 1322 0141 7f47
+0440 418c 0c28 0200 2202 417f 6a22 0520
+0122 036a 4100 2002 6b71 2003 6b21 0220
+0520 0371 047f 2002 0541 000b 2006 6a22
+0341 e00b 2802 0022 056a 2104 2003 2000
+4b20 0341 ffff ffff 0749 7104 4041 e80b
+2802 0022 0204 4020 0420 054d 2004 2002
+4b72 0d04 0b20 0310 1322 0220 0146 0d05
+2003 2101 0c02 0b0b 0c01 0b41 0020 016b
+2105 2007 2001 4b20 0141 ffff ffff 0749
+2002 417f 4771 7104 4020 0d20 016b 4190
+0c28 0200 2203 6a41 0020 036b 7122 0341
+ffff ffff 0749 0440 2003 1013 417f 4604
+4020 0510 131a 0c03 0520 0320 016a 2103
+0b05 2001 2103 0b05 2001 2103 0b20 0241
+7f47 0440 2002 2101 0c03 0b0b 41ec 0b41
+ec0b 2802 0041 0472 3602 000b 2006 41ff
+ffff ff07 4904 4020 0610 1322 0141 0010
+1322 0349 2001 417f 4720 0341 7f47 7171
+0440 2003 2001 6b22 0320 0041 286a 4b0d
+020b 0b0c 010b 41e0 0b41 e00b 2802 0020
+036a 2202 3602 0020 0241 e40b 2802 004b
+0440 41e4 0b20 0236 0200 0b02 4041 c808
+2802 0022 0804 4041 f00b 2102 0240 0240
+0340 2001 2002 2802 0022 0420 0241 046a
+2207 2802 0022 056a 460d 0120 0228 0208
+2202 0d00 0b0c 010b 2002 2802 0c41 0871
+4504 4020 0820 0149 2008 2004 4f71 0440
+2007 2005 2003 6a36 0200 41bc 0828 0200
+2105 4100 2008 4108 6a22 026b 4107 7121
+0141 c808 2008 2002 4107 7104 7f20 0105
+4100 2201 0b6a 2202 3602 0041 bc08 2003
+2001 6b20 056a 2201 3602 0020 0220 0141
+0172 3602 0420 0220 016a 4128 3602 0441
+cc08 4198 0c28 0200 3602 000c 040b 0b0b
+2001 41c0 0828 0200 2202 4904 4041 c008
+2001 3602 0020 0121 020b 2001 2003 6a21
+0a41 f00b 2105 0240 0240 0340 2005 2802
+0020 0a46 0d01 2005 2802 0822 050d 0041
+f00b 2105 0b0c 010b 2005 2802 0c41 0871
+0440 41f0 0b21 0505 2005 2001 3602 0020
+0541 046a 2205 2005 2802 0020 036a 3602
+0041 0020 0141 086a 2204 6b41 0771 2107
+4100 200a 4108 6a22 056b 4107 7121 0320
+0120 0441 0771 047f 2007 0541 000b 6a22
+0d20 006a 2106 200a 2005 4107 7104 7f20
+0305 4100 0b6a 2204 200d 6b20 006b 2107
+200d 2000 4103 7236 0204 0240 2004 2008
+4604 4041 bc08 41bc 0828 0200 2007 6a22
+0036 0200 41c8 0820 0636 0200 2006 2000
+4101 7236 0204 0520 0441 c408 2802 0046
+0440 41b8 0841 b808 2802 0020 076a 2200
+3602 0041 c408 2006 3602 0020 0620 0041
+0172 3602 0420 0620 006a 2000 3602 000c
+020b 2004 2802 0422 0041 0371 4101 4604
+7f20 0041 7871 210b 2000 4103 7621 0102
+4020 0041 8002 4904 4020 0428 020c 2105
+0240 2004 2802 0822 0320 0141 0374 41d8
+086a 2200 4704 4020 0320 0249 0440 1003
+0b20 0328 020c 2004 460d 0110 030b 0b20
+0520 0346 0440 41b0 0841 b008 2802 0041
+0120 0174 417f 7371 3602 000c 020b 0240
+2005 2000 4604 4020 0541 086a 2114 0520
+0520 0249 0440 1003 0b20 0541 086a 2200
+2802 0020 0446 0440 2000 2114 0c02 0b10
+030b 0b20 0320 0536 020c 2014 2003 3602
+0005 2004 2802 1821 0802 4020 0428 020c
+2200 2004 4604 4020 0441 106a 2203 4104
+6a22 0128 0200 2200 4504 4020 0328 0200
+2200 0440 2003 2101 0541 0021 0c0c 030b
+0b03 4020 0041 146a 2205 2802 0022 0304
+4020 0321 0020 0521 010c 010b 2000 4110
+6a22 0528 0200 2203 0440 2003 2100 2005
+2101 0c01 0b0b 2001 2002 4904 4010 0305
+2001 4100 3602 0020 0021 0c0b 0520 0428
+0208 2205 2002 4904 4010 030b 2005 410c
+6a22 0328 0200 2004 4704 4010 030b 2000
+4108 6a22 0128 0200 2004 4604 4020 0320
+0036 0200 2001 2005 3602 0020 0021 0c05
+1003 0b0b 0b20 0845 0d01 0240 2004 2004
+2802 1c22 0141 0274 41e0 0a6a 2200 2802
+0046 0440 2000 200c 3602 0020 0c0d 0141
+b408 41b4 0828 0200 4101 2001 7441 7f73
+7136 0200 0c03 0520 0841 c008 2802 0049
+0440 1003 0b20 0841 106a 2200 2802 0020
+0446 0440 2000 200c 3602 0005 2008 200c
+3602 140b 200c 450d 030b 0b20 0c41 c008
+2802 0022 0149 0440 1003 0b20 0c20 0836
+0218 2004 4110 6a22 0028 0200 2203 0440
+2003 2001 4904 4010 0305 200c 2003 3602
+1020 0320 0c36 0218 0b0b 2000 2802 0422
+0045 0d01 2000 41c0 0828 0200 4904 4010
+0305 200c 2000 3602 1420 0020 0c36 0218
+0b0b 0b20 0b20 076a 2107 2004 200b 6a05
+2004 0b22 0041 046a 2200 2000 2802 0041
+7e71 3602 0020 0620 0741 0172 3602 0420
+0620 076a 2007 3602 0020 0741 0376 2100
+2007 4180 0249 0440 2000 4103 7441 d808
+6a21 0302 4041 b008 2802 0022 0141 0120
+0074 2200 7104 4020 0341 086a 2201 2802
+0022 0041 c008 2802 004f 0440 2001 2115
+2000 2109 0c02 0b10 0305 41b0 0820 0120
+0072 3602 0020 0341 086a 2115 2003 2109
+0b0b 2015 2006 3602 0020 0920 0636 020c
+2006 2009 3602 0820 0620 0336 020c 0c02
+0b02 7f20 0741 0876 2200 047f 411f 2007
+41ff ffff 074b 0d01 1a20 0741 0e20 0020
+0041 80fe 3f6a 4110 7641 0871 2203 7422
+0141 80e0 1f6a 4110 7641 0471 2200 2003
+7220 0120 0074 2201 4180 800f 6a41 1076
+4102 7122 0072 6b20 0120 0074 410f 766a
+2200 4107 6a76 4101 7120 0041 0174 7205
+4100 0b0b 2202 4102 7441 e00a 6a21 0320
+0620 0236 021c 2006 4110 6a22 0041 0036
+0204 2000 4100 3602 0041 b408 2802 0022
+0141 0120 0274 2200 7145 0440 41b4 0820
+0120 0072 3602 0020 0320 0636 0200 2006
+2003 3602 1820 0620 0636 020c 2006 2006
+3602 080c 020b 2003 2802 0021 0041 1920
+0241 0176 6b21 0120 0720 0241 1f46 047f
+4100 0520 010b 7421 0202 4002 4002 4003
+4020 0028 0204 4178 7120 0746 0d02 2002
+4101 7421 0320 0041 106a 2002 411f 7641
+0274 6a22 0228 0200 2201 450d 0120 0321
+0220 0121 000c 000b 000b 2002 41c0 0828
+0200 4904 4010 0305 2002 2006 3602 0020
+0620 0036 0218 2006 2006 3602 0c20 0620
+0636 0208 0c04 0b0c 010b 2000 4108 6a22
+0328 0200 2202 41c0 0828 0200 2201 4f20
+0020 014f 7104 4020 0220 0636 020c 2003
+2006 3602 0020 0620 0236 0208 2006 2000
+3602 0c20 0641 0036 0218 0510 030b 0b0b
+0b20 0e24 0620 0d41 086a 0f0b 0b03 4002
+4020 0528 0200 2202 2008 4d04 4020 0220
+0528 0204 6a22 0d20 084b 0d01 0b20 0528
+0208 2105 0c01 0b0b 4100 200d 4151 6a22
+0741 086a 2205 6b41 0771 2102 2007 2005
+4107 7104 7f20 0205 4100 0b6a 2202 2008
+4110 6a22 0c49 047f 2008 0520 020b 2207
+4108 6a21 0a20 0741 186a 2105 2003 4158
+6a21 0941 0020 0141 086a 2204 6b41 0771
+2102 41c8 0820 0120 0441 0771 047f 2002
+0541 0022 020b 6a22 0436 0200 41bc 0820
+0920 026b 2202 3602 0020 0420 0241 0172
+3602 0420 0420 026a 4128 3602 0441 cc08
+4198 0c28 0200 3602 0020 0741 046a 2202
+411b 3602 0020 0a41 f00b 2902 0037 0200
+200a 41f8 0b29 0200 3702 0841 f00b 2001
+3602 0041 f40b 2003 3602 0041 fc0b 4100
+3602 0041 f80b 200a 3602 0020 0521 0103
+4020 0141 046a 2201 4107 3602 0020 0141
+046a 200d 490d 000b 2007 2008 4704 4020
+0220 0228 0200 417e 7136 0200 2008 2007
+2008 6b22 0441 0172 3602 0420 0720 0436
+0200 2004 4103 7621 0120 0441 8002 4904
+4020 0141 0374 41d8 086a 2102 41b0 0828
+0200 2203 4101 2001 7422 0171 0440 2002
+4108 6a22 0328 0200 2201 41c0 0828 0200
+4904 4010 0305 2003 210f 2001 210b 0b05
+41b0 0820 0320 0172 3602 0020 0241 086a
+210f 2002 210b 0b20 0f20 0836 0200 200b
+2008 3602 0c20 0820 0b36 0208 2008 2002
+3602 0c0c 030b 2004 4108 7622 0104 7f20
+0441 ffff ff07 4b04 7f41 1f05 2004 410e
+2001 2001 4180 fe3f 6a41 1076 4108 7122
+0274 2203 4180 e01f 6a41 1076 4104 7122
+0120 0272 2003 2001 7422 0341 8080 0f6a
+4110 7641 0271 2201 726b 2003 2001 7441
+0f76 6a22 0141 076a 7641 0171 2001 4101
+7472 0b05 4100 0b22 0541 0274 41e0 0a6a
+2102 2008 2005 3602 1c20 0841 0036 0214
+200c 4100 3602 0041 b408 2802 0022 0341
+0120 0574 2201 7145 0440 41b4 0820 0320
+0172 3602 0020 0220 0836 0200 2008 2002
+3602 1820 0820 0836 020c 2008 2008 3602
+080c 030b 2002 2802 0021 0141 1920 0541
+0176 6b21 0320 0420 0541 1f46 047f 4100
+0520 030b 7421 0502 4002 4002 4003 4020
+0128 0204 4178 7120 0446 0d02 2005 4101
+7421 0220 0141 106a 2005 411f 7641 0274
+6a22 0528 0200 2203 450d 0120 0221 0520
+0321 010c 000b 000b 2005 41c0 0828 0200
+4904 4010 0305 2005 2008 3602 0020 0820
+0136 0218 2008 2008 3602 0c20 0820 0836
+0208 0c05 0b0c 010b 2001 4108 6a22 0228
+0200 2205 41c0 0828 0200 2203 4f20 0120
+034f 7104 4020 0520 0836 020c 2002 2008
+3602 0020 0820 0536 0208 2008 2001 3602
+0c20 0841 0036 0218 0510 030b 0b0b 0541
+c008 2802 0022 0245 2001 2002 4972 0440
+41c0 0820 0136 0200 0b41 f00b 2001 3602
+0041 f40b 2003 3602 0041 fc0b 4100 3602
+0041 d408 4188 0c28 0200 3602 0041 d008
+417f 3602 0041 0021 0203 4020 0241 0374
+41d8 086a 2205 2005 3602 0c20 0520 0536
+0208 2002 4101 6a22 0241 2047 0d00 0b20
+0341 586a 2105 4100 2001 4108 6a22 026b
+4107 7121 0341 c808 2001 2002 4107 7104
+7f20 0305 4100 0b22 016a 2203 3602 0041
+bc08 2005 2001 6b22 0136 0200 2003 2001
+4101 7236 0204 2003 2001 6a41 2836 0204
+41cc 0841 980c 2802 0036 0200 0b0b 41bc
+0828 0200 2201 2000 4b04 4041 bc08 2001
+2000 6b22 0336 0200 41c8 0841 c808 2802
+0022 0220 006a 2201 3602 0020 0120 0341
+0172 3602 0420 0220 0041 0372 3602 0420
+0e24 0620 0241 086a 0f0b 0b10 0f41 0c36
+0200 200e 2406 4100 0b0b ae92 8080 0001
+0f7f 0240 2000 4504 400f 0b20 0041 786a
+2201 41c0 0828 0200 220b 4904 4010 030b
+2000 417c 6a28 0200 2200 4103 7122 0a41
+0146 0440 1003 0b20 0120 0041 7871 2204
+6a21 0602 4020 0041 0171 0440 2001 2103
+2004 2102 0520 0128 0200 2108 200a 4504
+400f 0b20 0141 0020 086b 6a22 0020 0b49
+0440 1003 0b20 0820 046a 2101 2000 41c4
+0828 0200 4604 4020 0641 046a 2202 2802
+0022 0341 0371 4103 4704 4020 0021 0320
+0121 020c 030b 41b8 0820 0136 0200 2002
+2003 417e 7136 0200 2000 2001 4101 7236
+0204 2000 2001 6a20 0136 0200 0f0b 2008
+4103 7621 0a20 0841 8002 4904 4020 0028
+020c 2103 2000 2802 0822 0420 0a41 0374
+41d8 086a 2202 4704 4020 0420 0b49 0440
+1003 0b20 0428 020c 2000 4704 4010 030b
+0b20 0320 0446 0440 41b0 0841 b008 2802
+0041 0120 0a74 417f 7371 3602 0020 0021
+0320 0121 020c 030b 2003 2002 4604 4020
+0341 086a 2105 0520 0320 0b49 0440 1003
+0b20 0341 086a 2202 2802 0020 0046 0440
+2002 2105 0510 030b 0b20 0420 0336 020c
+2005 2004 3602 0020 0021 0320 0121 020c
+020b 2000 2802 1821 0c02 4020 0028 020c
+2204 2000 4604 4020 0041 106a 2205 4104
+6a22 0828 0200 2204 0440 2008 2105 0520
+0528 0200 2204 4504 4041 0021 070c 030b
+0b03 4020 0441 146a 2208 2802 0022 0a04
+4020 0a21 0420 0821 050c 010b 2004 4110
+6a22 0828 0200 220a 0440 200a 2104 2008
+2105 0c01 0b0b 2005 200b 4904 4010 0305
+2005 4100 3602 0020 0421 070b 0520 0028
+0208 2205 200b 4904 4010 030b 2005 410c
+6a22 0828 0200 2000 4704 4010 030b 2004
+4108 6a22 0a28 0200 2000 4604 4020 0820
+0436 0200 200a 2005 3602 0020 0421 0705
+1003 0b0b 0b20 0c04 4020 0020 0028 021c
+2204 4102 7441 e00a 6a22 0528 0200 4604
+4020 0520 0736 0200 2007 4504 4041 b408
+41b4 0828 0200 4101 2004 7441 7f73 7136
+0200 2000 2103 2001 2102 0c04 0b05 200c
+41c0 0828 0200 4904 4010 030b 200c 4110
+6a22 0428 0200 2000 4604 4020 0420 0736
+0200 0520 0c20 0736 0214 0b20 0745 0440
+2000 2103 2001 2102 0c04 0b0b 2007 41c0
+0828 0200 2205 4904 4010 030b 2007 200c
+3602 1820 0041 106a 2208 2802 0022 0404
+4020 0420 0549 0440 1003 0520 0720 0436
+0210 2004 2007 3602 180b 0b20 0828 0204
+2204 0440 2004 41c0 0828 0200 4904 4010
+0305 2007 2004 3602 1420 0420 0736 0218
+2000 2103 2001 2102 0b05 2000 2103 2001
+2102 0b05 2000 2103 2001 2102 0b0b 0b20
+0320 064f 0440 1003 0b20 0641 046a 2201
+2802 0022 0041 0171 4504 4010 030b 2000
+4102 7104 4020 0120 0041 7e71 3602 0020
+0320 0241 0172 3602 0420 0320 026a 2002
+3602 0005 2006 41c8 0828 0200 4604 4041
+bc08 41bc 0828 0200 2002 6a22 0036 0200
+41c8 0820 0336 0200 2003 2000 4101 7236
+0204 2003 41c4 0828 0200 4704 400f 0b41
+c408 4100 3602 0041 b808 4100 3602 000f
+0b20 0641 c408 2802 0046 0440 41b8 0841
+b808 2802 0020 026a 2200 3602 0041 c408
+2003 3602 0020 0320 0041 0172 3602 0420
+0320 006a 2000 3602 000f 0b20 0041 7871
+2002 6a21 0520 0041 0376 2104 0240 2000
+4180 0249 0440 2006 2802 0c21 0220 0628
+0208 2201 2004 4103 7441 d808 6a22 0047
+0440 2001 41c0 0828 0200 4904 4010 030b
+2001 2802 0c20 0647 0440 1003 0b0b 2002
+2001 4604 4041 b008 41b0 0828 0200 4101
+2004 7441 7f73 7136 0200 0c02 0b20 0220
+0046 0440 2002 4108 6a21 0e05 2002 41c0
+0828 0200 4904 4010 030b 2002 4108 6a22
+0028 0200 2006 4604 4020 0021 0e05 1003
+0b0b 2001 2002 3602 0c20 0e20 0136 0200
+0520 0628 0218 2107 0240 2006 2802 0c22
+0020 0646 0440 2006 4110 6a22 0241 046a
+2201 2802 0022 0004 4020 0121 0205 2002
+2802 0022 0045 0440 4100 2109 0c03 0b0b
+0340 2000 4114 6a22 0128 0200 2204 0440
+2004 2100 2001 2102 0c01 0b20 0041 106a
+2201 2802 0022 0404 4020 0421 0020 0121
+020c 010b 0b20 0241 c008 2802 0049 0440
+1003 0520 0241 0036 0200 2000 2109 0b05
+2006 2802 0822 0241 c008 2802 0049 0440
+1003 0b20 0241 0c6a 2201 2802 0020 0647
+0440 1003 0b20 0041 086a 2204 2802 0020
+0646 0440 2001 2000 3602 0020 0420 0236
+0200 2000 2109 0510 030b 0b0b 2007 0440
+2006 2006 2802 1c22 0041 0274 41e0 0a6a
+2202 2802 0046 0440 2002 2009 3602 0020
+0945 0440 41b4 0841 b408 2802 0041 0120
+0074 417f 7371 3602 000c 040b 0520 0741
+c008 2802 0049 0440 1003 0b20 0741 106a
+2200 2802 0020 0646 0440 2000 2009 3602
+0005 2007 2009 3602 140b 2009 450d 030b
+2009 41c0 0828 0200 2202 4904 4010 030b
+2009 2007 3602 1820 0641 106a 2201 2802
+0022 0004 4020 0020 0249 0440 1003 0520
+0920 0036 0210 2000 2009 3602 180b 0b20
+0128 0204 2200 0440 2000 41c0 0828 0200
+4904 4010 0305 2009 2000 3602 1420 0020
+0936 0218 0b0b 0b0b 0b20 0320 0541 0172
+3602 0420 0320 056a 2005 3602 0020 0341
+c408 2802 0046 0440 41b8 0820 0536 0200
+0f05 2005 2102 0b0b 2002 4103 7621 0120
+0241 8002 4904 4020 0141 0374 41d8 086a
+2100 41b0 0828 0200 2202 4101 2001 7422
+0171 0440 2000 4108 6a22 0228 0200 2201
+41c0 0828 0200 4904 4010 0305 2002 210f
+2001 210d 0b05 41b0 0820 0220 0172 3602
+0020 0041 086a 210f 2000 210d 0b20 0f20
+0336 0200 200d 2003 3602 0c20 0320 0d36
+0208 2003 2000 3602 0c0f 0b20 0241 0876
+2200 047f 2002 41ff ffff 074b 047f 411f
+0520 0241 0e20 0020 0041 80fe 3f6a 4110
+7641 0871 2200 7422 0141 80e0 1f6a 4110
+7641 0471 2204 2000 7220 0120 0474 2200
+4180 800f 6a41 1076 4102 7122 0172 6b20
+0020 0174 410f 766a 2200 4107 6a76 4101
+7120 0041 0174 720b 0541 000b 2201 4102
+7441 e00a 6a21 0020 0320 0136 021c 2003
+4100 3602 1420 0341 0036 0210 0240 41b4
+0828 0200 2204 4101 2001 7422 0571 0440
+2000 2802 0021 0041 1920 0141 0176 6b21
+0420 0220 0141 1f46 047f 4100 0520 040b
+7421 0102 4002 4002 4003 4020 0028 0204
+4178 7120 0246 0d02 2001 4101 7421 0420
+0041 106a 2001 411f 7641 0274 6a22 0128
+0200 2205 450d 0120 0421 0120 0521 000c
+000b 000b 2001 41c0 0828 0200 4904 4010
+0305 2001 2003 3602 0020 0320 0036 0218
+2003 2003 3602 0c20 0320 0336 0208 0c04
+0b0c 010b 2000 4108 6a22 0128 0200 2202
+41c0 0828 0200 2204 4f20 0020 044f 7104
+4020 0220 0336 020c 2001 2003 3602 0020
+0320 0236 0208 2003 2000 3602 0c20 0341
+0036 0218 0510 030b 0b05 41b4 0820 0420
+0572 3602 0020 0020 0336 0200 2003 2000
+3602 1820 0320 0336 020c 2003 2003 3602
+080b 0b41 d008 41d0 0828 0200 417f 6a22
+0036 0200 2000 0440 0f05 41f8 0b21 000b
+0340 2000 2802 0022 0241 086a 2100 2002
+0d00 0b41 d008 417f 3602 000b 0b83 8080
+8000 0001 0bde 8080 8000 0102 7f02 7f23
+0528 0200 2202 2000 410f 6a41 7071 2200
+6a21 0120 0041 004a 2001 2002 4871 2001
+4100 4872 0440 1002 1a41 0c10 0541 7f0f
+0b23 0520 0136 0200 2001 1001 4a04 4010
+0045 0440 410c 1005 2305 2002 3602 0041
+7f0f 0b0b 2002 0b0b 8480 8080 0000 4100
+0b9d 8280 8000 0104 7f02 7f20 0020 026a
+2104 2001 41ff 0171 2101 2002 41c3 004e
+0440 0340 2000 4103 7104 4020 0020 013a
+0000 2000 4101 6a21 000c 010b 0b20 0441
+7c71 2205 41c0 006b 2106 2001 2001 4108
+7472 2001 4110 7472 2001 4118 7472 2103
+0340 2000 2006 4c04 4020 0020 0336 0200
+2000 2003 3602 0420 0020 0336 0208 2000
+2003 3602 0c20 0020 0336 0210 2000 2003
+3602 1420 0020 0336 0218 2000 2003 3602
+1c20 0020 0336 0220 2000 2003 3602 2420
+0020 0336 0228 2000 2003 3602 2c20 0020
+0336 0230 2000 2003 3602 3420 0020 0336
+0238 2000 2003 3602 3c20 0041 c000 6a21
+000c 010b 0b03 4020 0020 0548 0440 2000
+2003 3602 0020 0041 046a 2100 0c01 0b0b
+0b03 4020 0020 0448 0440 2000 2001 3a00
+0020 0041 016a 2100 0c01 0b0b 2004 2002
+6b0b 0bc9 8380 8000 0103 7f02 7f20 0241
+80c0 004e 0440 2000 2001 2002 1004 0f0b
+2000 2104 2000 2002 6a21 0320 0041 0371
+2001 4103 7146 0440 0340 2000 4103 7104
+4020 0245 0440 2004 0f0b 2000 2001 2c00
+003a 0000 2000 4101 6a21 0020 0141 016a
+2101 2002 4101 6b21 020c 010b 0b20 0341
+7c71 2202 41c0 006b 2105 0340 2000 2005
+4c04 4020 0020 0128 0200 3602 0020 0020
+0128 0204 3602 0420 0020 0128 0208 3602
+0820 0020 0128 020c 3602 0c20 0020 0128
+0210 3602 1020 0020 0128 0214 3602 1420
+0020 0128 0218 3602 1820 0020 0128 021c
+3602 1c20 0020 0128 0220 3602 2020 0020
+0128 0224 3602 2420 0020 0128 0228 3602
+2820 0020 0128 022c 3602 2c20 0020 0128
+0230 3602 3020 0020 0128 0234 3602 3420
+0020 0128 0238 3602 3820 0020 0128 023c
+3602 3c20 0041 c000 6a21 0020 0141 c000
+6a21 010c 010b 0b03 4020 0020 0248 0440
+2000 2001 2802 0036 0200 2000 4104 6a21
+0020 0141 046a 2101 0c01 0b0b 0520 0341
+046b 2102 0340 2000 2002 4804 4020 0020
+012c 0000 3a00 0020 0020 012c 0001 3a00
+0120 0020 012c 0002 3a00 0220 0020 012c
+0003 3a00 0320 0041 046a 2100 2001 4104
+6a21 010c 010b 0b0b 0340 2000 2003 4804
+4020 0020 012c 0000 3a00 0020 0041 016a
+2100 2001 4101 6a21 010c 010b 0b20 040b
+0b
+				</code></pre>
+
+				<aside class="notes">
+					Significantly larger binary. This is partly due to the fact that the module operates on vectors and thus the module needs to require logic for loading and storing values on the heap. And partly due to the need for including various standard library functions.
+				</aside>
+			</section>
+
+			<section class="center">
+				<pre><code class="hljs javascript" contenteditable>
+var join = require( 'path' ).join;
+var createModule = require( './dasum.wasm.js' );
+
+var opts = {
+    'memory': 16777216,
+    'wasmBinaryFile': join( __dirname, 'dasum.wasm' )
+};
+
+// Create a new Module instance:
+var Module = createModule( opts );
+
+// Create a JavaScript wrapper around the C function:
+var wrapper = Module.cwrap( 'c_dasum', 'number', [ 'number', 'number', 'number' ] );
+
+// Define the user interface:
+function dasum( N, bytes, stride ) {
+    return wrapper( N, bytes.byteOffset, stride );
+}
+
+// Provide a means for allocating arrays on the heap:
+function malloc( nbytes ) {
+    var byteOffset = Module._malloc( nbytes );
+    return new Uint8Array( Module.HEAPU8.buffer, byteOffset, nbytes );
+}
+dasum.malloc = malloc;
+
+// Provide a means for freeing allocated memory:
+function free( bytes ) {
+    Module._free( bytes.byteOffset );
+}
+dasum.free = free;
+				</code></pre>
+
+				<aside class="notes">
+					<p>
+						Now that we used glue code, our procedure for loading and using a wasm module is slightly different. Note the memory size (16MB; default with Emscripten).
+					</p>
+					<p>
+						Note the crwap signature and the fact that WebAssembly functions can only accept numeric input values. Hence, instead of an actual pointer to an input array, we must provide a numeric offset, indicating where the array on which we want to operate begins.
+					</p>
+					<p>
+						Will want to provide convenience methods for malloc and free to make working with the module heap easier. This may involve checks as to whether memory has already been freed, etc.
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<pre><code class="hljs javascript" contenteditable>
+// Create a data array:
+var x = new Float64Array( [ 1.0, -2.0, 3.0, -4.0, 5.0 ] );
+
+// Determine the number of bytes:
+var nbytes = x.length * x.BYTES_PER_ELEMENT;
+
+// Allocate space on the heap:
+var bytes = dasum.malloc( nbytes );
+
+// Copy the data to the heap:
+bytes.set( new Uint8Array( x.buffer ) );
+
+// Compute the sum:
+var s = dasum( x.length, bytes, 1 );
+// returns 15.0
+
+// Free the memory:
+dasum.free( bytes );
+				</code></pre>
+
+				<aside class="notes">
+					Copying data to the heap.
+				</aside>
+			</section>
+
+			<section class="center">
+				<pre><code class="hljs javascript" contenteditable>
+var randu = require( '@stdlib/math/base/random/randu' );
+var floor = require( '@stdlib/math/base/special/floor' );
+
+var len = 100;
+
+// Allocate space on the heap:
+var bytes = wasm.malloc( len*8 ); // 8 bytes per element
+
+// Create a new view:
+var view = new Float64Array( bytes.buffer, bytes.byteOffset, len );
+
+// Initialize the view:
+for ( var i = 0; i &lt; len; i++ ) {
+    view[ i ] = ( randu()*20000.0 ) - 10000.0;
+}
+
+// Reuse the view:
+for ( i = 0; i &lt; 10; i++ ) {
+    view[ floor( randu()*len ) ] = ( randu()*20000.0 ) - 10000.0;
+    var y = dasum( len, bytes, 1 );
+}
+				</code></pre>
+
+				<aside class="notes">
+					Set values directly on the heap. If possible work with the heap directly. Copying data from externally defined buffers (e.g., typed arrays) can be a significant performance bottleneck. When possible, reuse and share memory. Here, we reuse the view 10 times.
+				</aside>
+			</section>
+
+			<section class="center" data-transition="slide-in slide-out" data-transition-speed="default">
+				<table>
+					<thead>
+						<tr>
+							<th>Length</th>
+							<th>JavaScript</th>
+							<th>wasm</th>
+							<th>Native</th>
+							<th>Perf</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>10</td>
+							<td>22,438,020</td>
+							<td>18,226,375</td>
+							<td>7,084,870</td>
+							<td>2.57x</td>
+						</tr>
+						<tr>
+							<td>100</td>
+							<td>4,350,384</td>
+							<td>6,428,586</td>
+							<td>6,428,626</td>
+							<td>1.0x</td>
+						</tr>
+						<tr>
+							<td>1000</td>
+							<td>481,417</td>
+							<td>997,234</td>
+							<td>3,289,090</td>
+							<td>0.30x</td>
+						</tr>
+						<tr>
+							<td>10000</td>
+							<td>28,186</td>
+							<td>110,540</td>
+							<td>355,172</td>
+							<td>0.31x</td>
+						</tr>
+						<tr>
+							<td>100000</td>
+							<td>1,617</td>
+							<td>11,157</td>
+							<td>30,058</td>
+							<td>0.37x</td>
+						</tr>
+						<tr>
+							<td>1000000</td>
+							<td>153</td>
+							<td>979</td>
+							<td>1,850</td>
+							<td>0.53x</td>
+						</tr>
+					</tbody>
+				</table>
+				<aside class="notes">
+					<p>
+						Benchmarks! Note that native is hardware optimized BLAS. Note when compared to native add-on implementing reference BLAS that performance is the basically the same (i.e., wasm matches native performance). However, native add-ons have a significant advantage of being able to utilize hardware optimized libraries. Hardware optimized libraries will win every time.
+					</p>
+					<p>
+						WebAssembly is NOT a replacement for Node.js native add-ons.
+					</p>
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Notes</h2>
+
+				<div class="row">
+					<ul class="column column-2">&nbsp;
+					</ul>
+					<ul class="column column-6">
+						<li>Glue Code</li>
+						<li>Boilerplate</li>
+						<li>Complementarity</li>
+						<li>Shared Memory</li>
+						<li>Scripting</li>
+						<li>Native Add-ons</li>
+					</ul>
+				</div>
+
+				<aside class="notes">
+
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2 class="no-text-transform">Roadmap</h2>
+
+				<div class="row">
+					<ul class="column column-2">&nbsp;
+					</ul>
+					<ul class="column column-6">
+						<li class="fragment">Cross-browser Consensus</li>
+						<li class="fragment">Active Development</li>
+						<li class="fragment">LLVM</li>
+						<li class="fragment">Developer Tools</li>
+						<li class="fragment">New Features</li>
+						<li class="fragment">Node Version 8</li>
+					</ul>
+				</div>
+
+				<aside class="notes">
+					<ul>
+						<li>
+							Cross-browser consensus. Version 1.0. No longer in MVP, which means that browsers can now begin shipping WebAssembly enabled by default.
+						</li>
+						<li>
+							The specification is, however, under active development. And in fact, prior to version 1.0, there was no formal W3C working group. Only now are browser vendors working on an official WebAssembly specification.
+						</li>
+						<li>
+							Plans to graduate the LLVM from experimental to stable. Currently, you need to always ensure you pull down the latest SDK changes for Emscripten, binaryen, and company, as the entire build toolchain is in constant flux.
+						</li>
+						<li>
+							WebAssembly integration into browser developer tools.
+						</li>
+						<li>
+							Also on the roadmap are new features: threads, SIMD, exception-handling, GC, full IEEE 754 support.
+						</li>
+						<li>
+							You can start experimenting with WebAssembly now. Recent browsers and in Node.js version 8.
+						</li>
+					</ul>
+				</aside>
+			</section>
+
+			<section class="center">
+				<aside class="notes">
+					(next slide)
+				</aside>
+			</section>
+
+			<section class="center" data-transition="fade-in fade-out" data-transition-speed="default">
+				<h2 class="no-text-transform">Thank you!</h2>
+
+				<aside class="notes">
+
+				</aside>
+			</section>
+
+			<section class="center">
+				<div>
+					<a href="https://github.com/stdlib-js/stdlib"><img src="img/hex_sticker_black.svg" alt="stdlib" class="undecorated"></a>
+				</div>
+
+				<p>
+					<small><a href="https://github.com/stdlib-js/stdlib"><i class="fa fa-github"></i> https://github.com/stdlib-js/stdlib</a></small>
+					<br>
+					<small><a href="https://www.patreon.com/athan"><i class="fa fa-bitcoin"></i> https://www.patreon.com/athan</a></small>
+				</p>
+
+				<aside class="notes">
+
+				</aside>
+			</section>
+
+			<section>
+				<!-- Add blank slide to separate main presentation from appendix -->
+				<aside class="notes">
+					Intentionally left blank.
+				</aside>
+			</section>
+
+			<section class="center">
+				<h2>Appendix</h2>
+			</section>
+
+			<section class="center">
+				<!-- Intentionally many lines -->
+				<pre><code class="hljs javascript" contenteditable>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				</code></pre>
+				<aside class="notes">
+					Slide for code editing.
+				</aside>
+			</section>
+
+			<!-- <section class="center">
+				<h2>Heading</h2>
+			</section> -->
+
+			<section class="center">
+				<h2>The End</h2>
+			</section>
+
+		</div>
+
+	</div>
+
+	<footer>
+		<a href="https://github.com/kgryte"><i class="fa fa-github"></i> Athan Reines</a> | <a href="https://twitter.com/kgryte"><i class="fa fa-twitter"></i> @kgryte</a> | <a href="https://twitter.com/stdlibjs"><i class="fa fa-twitter"></i> @stdlibjs</a>
+	</footer>
+
+	<script src="js/lib/reveal/head.min.js"></script>
+	<script src="js/lib/reveal/reveal.js"></script>
+	<script src="js/lib/reveal/init.js"></script>
+	<script src="js/script.js"></script>
+</body>
+</html>

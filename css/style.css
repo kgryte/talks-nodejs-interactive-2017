@@ -1,0 +1,97 @@
+
+.reveal a {
+	color: #222;
+	text-decoration: none;
+}
+
+.reveal h2 a {
+	border-bottom: 1px dashed #222;
+}
+
+.reveal h2 a:hover {
+	border-bottom: 1px dashed #222;
+}
+
+.reveal section img.undecorated {
+	border: none;
+	box-shadow: none;
+	background: none;
+}
+
+.reveal .text-align-left {
+	text-align: left;
+}
+
+.reveal .heading-overlay {
+	padding: 40px 0;
+	background-color: rgba(255,255,255,1);
+}
+
+.reveal .fa-ul {
+	list-style: none;
+}
+
+.reveal .profile_pic img {
+	margin: 0;
+	height: 200px;
+	width: 200px;
+
+	border: none;
+	border-radius: 50%;
+}
+
+.reveal .profile_pic p {
+	font-size: 18px;
+	text-align: center;
+	margin: 2px auto;
+}
+
+.title-slide h1 {
+	text-transform: none!important;
+	font-size: 1.5em;
+}
+
+#splash h1,
+#splash a,
+#splash {
+	color: #efefef!important;
+}
+
+.reveal .no-text-transform {
+	text-transform: none!important;
+}
+
+.fa-twitter {
+	color: #1DA1F2;
+}
+
+.hidden {
+	display: none;
+}
+
+header,
+footer {
+	z-index: 9999999999;
+	font-family: "Source Sans Pro", Helvetica, sans-serif;
+	font-size: 24px;
+	font-weight: normal;
+	color: #222;
+}
+
+header {
+	position: fixed;
+	bottom: 10px;
+	left: 0;
+}
+
+footer {
+	position: fixed;
+	bottom: 40px;
+	right: 40px;
+}
+
+header a,
+footer a {
+	color: #000;
+	text-decoration: none;
+}

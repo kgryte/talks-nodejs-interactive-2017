@@ -1,0 +1,49 @@
+{
+  "name": "talks-nodejs-interactive-2017",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Talk for Node.js Interactive (2017).",
+  "author": {
+    "name": "Athan Reines",
+    "email": "kgryte@gmail.com"
+  },
+  "contributors": [
+    {
+      "name": "Athan Reines",
+      "email": "kgryte@gmail.com"
+    }
+  ],
+  "scripts": {},
+  "main": "",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kgryte/talks-nodjs-interactive-2017.git"
+  },
+  "keywords": [
+		"talk",
+		"slides",
+		"presentation",
+    "nodejs interactive",
+    "node interactive",
+    "vancouver",
+    "math",
+    "mathematics",
+    "numeric computing",
+    "javascript",
+    "js",
+    "nodejs",
+    "node",
+    "webassembly",
+    "assembly",
+    "wasm"
+	],
+  "bugs": {
+    "url": "https://github.com/kgryte/talks-nodejs-interactive-2017/issues"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "jshint": "2.x.x",
+    "jshint-stylish": "2.x.x"
+  },
+  "license": ""
+}
