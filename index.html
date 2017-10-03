@@ -498,7 +498,7 @@
 							The <strong>function</strong> section declares the signatures of all functions used in a module, whose definitions will appear in the <strong>code</strong> section.
 						</li>
 						<li>
-							The <strong>table</strong> section declares tables used in a module, where a table is similar to lineary memory, except, instead of bytes, the elements are opaque values of a particular element type. At the moment, the only supported element type is <code>"anyfunc"</code>, and the primary purpose of a table is to implement indirect function calls in C/C++ where the table contains indirectly-callable functions and an integer index is used as the pointer-to-function.
+							The <strong>table</strong> section declares tables used in a module, where a table is similar to linear memory, except, instead of bytes, the elements are opaque values of a particular element type. At the moment, the only supported element type is <code>"anyfunc"</code>, and the primary purpose of a table is to implement indirect function calls in C/C++ where the table contains indirectly-callable functions and an integer index is used as the pointer-to-function.
 						</li>
 						<li>
 							The <strong>memory</strong> section provides an internal definition of the linear memory used by a module, where linear memory can be considered as a sandboxed untyped array of bytes. Linear memories can either be declared within a module or created externally and imported.
@@ -659,21 +659,21 @@
 								Once a function is "hot", the function gets sent to an optimizing compiler which makes optimistic assumptions about input value types and code paths, essentially creating an optimized version of the "hot" function.
 							</p>
 							<p>
-								If a function receives an unexpected input value type, the optimized function gets deoptimized and the cycle repeats indefinitely or until a function gets put in "deoptimization hell".
+								If a function receives an unexpected input value type, the optimized function gets de-optimized and the cycle repeats indefinitely or until a function gets put in "deoptimization hell".
 							</p>
 							<p>
 								So instead of runtime optimization, with WebAssembly, we can do much of the optimization an optimizing compiler does before ever running in a JavaScript runtime.
 							</p>
 						</li>
 						<li>
-							Next, because WebAssembly is strongly typed, we are able to avoid deoptimizing cycles as the optimization/deoptimization loop is no longer needed: input and output value types are defined ahead-of-time and not something a runtime compiler must empirically discover.
+							Next, because WebAssembly is strongly typed, we are able to avoid de-optimizing cycles as the optimization/deoptimization loop is no longer needed: input and output value types are defined ahead-of-time and not something a runtime compiler must empirically discover.
 						</li>
 						<li>
 							Another advantage is that WebAssembly is lower-level, which means that WebAssembly is easier to translate to efficient and optimized machine instructions, which means faster execution.
 						</li>
 						<li>
 							<p>
-								Next, WebAssembly does not come with a garbage collector, which means that WebAssembly modules are responsible for manually managing memory. This is useful as this allows control over when memory is allocated and deallocated, as you might want to during "deadtime", i.e., when an application is running idle.
+								Next, WebAssembly does not currently come with a garbage collector, which means that WebAssembly modules are responsible for manually managing memory. This is useful as this allows control over when memory is allocated and deallocated, as you might want to during "deadtime", i.e., when an application is running idle.
 							</p>
 							<p>
 								On the flip side, the lack of GC also means that languages which depend on a GC cannot be easily compiled to WebAssembly (e.g., Python, et al).
@@ -723,7 +723,7 @@
 					<ul>
 						<li>
 							<p>
-								Binaryen is a set of tools for use as a the backend of compilers targeting WebAssembly as an output format.
+								Binaryen is a set of tools for use as a backend for compilers targeting WebAssembly as an output format.
 							</p>
 							<p>
 								Binaryen is used for supporting the LLVM compiler generation of WebAssembly.
@@ -743,7 +743,7 @@
 
 				<aside class="notes">
 					<p>
-						Most of the WebAssembly toolchain necessary for compiling WebAssembly can be installed via a standalone Emscripten SDK, which includes Emscripten, Binaryen, and CLANG.
+						Most of the WebAssembly toolchain necessary for compiling WebAssembly can be installed via a standalone Emscripten SDK, which includes Emscripten, Binaryen, and clang.
 					</p>
 					<p>
 						One thing I should warn you: the installed SDK is huge. On my Mac, the entire set of tools consumes over 10GB in disk space.
@@ -1001,7 +1001,7 @@ var hypot = instance.exports.c_hypot;
 				</code></pre>
 
 				<aside class="notes">
-					Load similar to require (synchronously). Load buffer. Initialize the module environment. Create a block of linear memory which a module will use for its heap. Create a table for indirect C/C++ function calls. Bundle as imports. Create a new instance. Use as normal.
+					Load similar to require (synchronously). Load buffer. Initialize the module environment. Create a block of linear memory which a module will use for its heap. Create a table for indirect C/C++ function calls. Bundle as "imports". Create a new instance. Use as normal.
 				</aside>
 			</section>
 
@@ -1065,7 +1065,7 @@ $ emcc \
 				</code></pre>
 
 				<aside class="notes">
-					This time, we are not set the SIDE_MODULE flag, which will result in a significantly larger binary file. The MODULARIZE flag instructs Emscripten to wrap the glue code interface as a CommonJS module that can be required.
+					This time, we are not setting the SIDE_MODULE flag, which will result in a significantly larger binary file. The MODULARIZE flag instructs Emscripten to wrap the glue code interface as a CommonJS module that can be required.
 				</aside>
 			</section>
 
@@ -1791,7 +1791,7 @@ c408 2802 0046 0440 41b8 0820 0536 0200
 				</code></pre>
 
 				<aside class="notes">
-					Significantly larger binary. This is partly due to the fact that the module operates on vectors and thus the module needs to require logic for loading and storing values on the heap. And partly due to the need for including various standard library functions.
+					Significantly larger binary. This is partly due to the fact that the module operates on vectors and thus the module needs logic for loading and storing values on the heap. And partly due to the need for including various standard library functions.
 				</aside>
 			</section>
 
@@ -1832,7 +1832,7 @@ dasum.free = free;
 
 				<aside class="notes">
 					<p>
-						Now that we used glue code, our procedure for loading and using a wasm module is slightly different. Note the memory size (16MB; default with Emscripten).
+						Now that we have glue code, our procedure for loading and using a wasm module is slightly different. Note the memory size (16MB; default with Emscripten).
 					</p>
 					<p>
 						Note the crwap signature and the fact that WebAssembly functions can only accept numeric input values. Hence, instead of an actual pointer to an input array, we must provide a numeric offset, indicating where the array on which we want to operate begins.
@@ -2006,7 +2006,7 @@ for ( i = 0; i &lt; 10; i++ ) {
 				<aside class="notes">
 					<ul>
 						<li>
-							Cross-browser consensus. Version 1.0. No longer in MVP, which means that browsers can now begin shipping WebAssembly enabled by default.
+							Cross-browser consensus. Version 1.0. No longer in MVP, which means that browsers are now shipping WebAssembly enabled by default.
 						</li>
 						<li>
 							The specification is, however, under active development. And in fact, prior to version 1.0, there was no formal W3C working group. Only now are browser vendors working on an official WebAssembly specification.
